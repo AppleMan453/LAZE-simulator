@@ -22,7 +22,7 @@ class Example extends Phaser.Scene {
         };
         
 
-        this.scoreText = this.add.text(100, 0, '£: ' + this.pound, {
+        this.scoreText = this.add.text( this.scale.width * 0.1 , 0, '£: ' + this.pound, {
             font: '32px Arial',
             fill: '#000000'
         }).setDepth(9999); this.scoreText.setScale(2,2); this.scoreText.setOrigin(0.5, 0);
@@ -35,7 +35,7 @@ class Example extends Phaser.Scene {
       
 
         
-        this.upgrade1 = this.add.text(this.cameras.main.centerX+430, 100, 'Flynn Labour - £' + this.up1, {
+        this.upgrade1 = this.add.text(this.scale.width * 0.75, 100, 'Flynn Labour - £' + this.up1, {
             font: '32px Arial',
             fill: '#ffffff'
         }).setDepth(9999); this.upgrade1.setScale(1.3,1.3); this.upgrade1.setOrigin(0.5, 0);
@@ -83,7 +83,7 @@ class Example extends Phaser.Scene {
             this.upgrade1.clearTint();
         });
         //upgrade 2
-        this.upgrade2 = this.add.text(this.cameras.main.centerX+430, 200, 'AI classmates - £' + this.up2, {
+        this.upgrade2 = this.add.text(this.scale.width * 0.75, 200, 'AI classmates - £' + this.up2, {
             font: '32px Arial',
             fill: '#ffffff'
         }).setDepth(9999); this.upgrade2.setScale(1.3,1.3); this.upgrade2.setOrigin(0.5, 0);
@@ -186,7 +186,7 @@ const config = {
     backgroundColor: '#FFFFFF',
 
     scale: {
-        mode: Phaser.Scale.FIT,
+        mode: Phaser.Scale.FIT  ,
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
     pixelArt: true,
