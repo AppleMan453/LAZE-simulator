@@ -10,7 +10,11 @@ class Example extends Phaser.Scene {
     create () {
         const cam = this.cameras.main;
         const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive();
-        shirt.setScale(3,3)
+        if (this.scale.width < 768) {
+            this.uiScale = Math.min(this.scale.width / 800, this.scale.height / 600);
+        } else {
+            shirt.setScale(3,3)
+        }
         this.pound = 0;
         this.up1 = 10;
         this.up2 = 30;     
