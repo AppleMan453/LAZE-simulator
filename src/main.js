@@ -11,10 +11,8 @@ class Example extends Phaser.Scene {
         const cam = this.cameras.main;
         const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive();
         if (this.scale.width < 768) {
-            if (screen.orientation && screen.orientation.lock) {
-                screen.orientation.lock("landscape");
-            }
-            this.uiScale = Math.min(this.scale.width / 800, this.scale.height / 600);
+            screen.orientation.lock("landscape");
+            this.uiScale = Math.min(this.scale.width / 500, this.scale.height / 500);
         } else {
             shirt.setScale(3,3)
         }
