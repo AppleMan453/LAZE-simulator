@@ -8,11 +8,25 @@ class Example extends Phaser.Scene {
     }
 
     create () {
+        this.layoutUI = (width, height) => {
+
+            this.scoreText.setPosition(width * 0.1, 80);
+            this.title.setPosition(width * 0.5, 20);
+
+            this.upgrade1.setPosition(width * 0.85, height * 0.3);
+            this.upgrade2.setPosition(width * 0.85, height * 0.45);
+
+            this.shirt.setPosition(width * 0.4, height * 0.5);
+        };
+        this.scale.on('resize', (gameSize) => {
+            this.layoutUI(gameSize.width, gameSize.height);
+        });
+        this.layoutUI(this.scale.width, this.scale.height);
         const cam = this.cameras.main;
         const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive();
         if (this.scale.width < 768) {
-            screen.orientation.lock("landscape");
-            this.uiScale = Math.min(this.scale.width / 500, this.scale.height / 500);
+            this.uiScale = Math.min(this.scale.width / 800, this.scale.height / 600);
+            shirt.setScale(this.uiScale)
         } else {
             shirt.setScale(3,3)
         }
@@ -180,7 +194,7 @@ class Example extends Phaser.Scene {
             }
         });
         
-
+        
     }
 
 
