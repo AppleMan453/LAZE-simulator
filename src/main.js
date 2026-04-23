@@ -38,7 +38,7 @@ class Example extends Phaser.Scene {
       
 
         
-        this.upgrade1 = this.add.text(cam.width * 0.85, 100, 'Flynn Labour - £' + this.up1, {
+        this.upgrade1 = this.add.text(this.scale.width * 0.85, 100, 'Flynn Labour - £' + this.up1, {
             font: '32px Arial',
             fill: '#ffffff'
         }).setDepth(9999); this.upgrade1.setScale(1.3,1.3); this.upgrade1.setOrigin(0.5, 0);
@@ -87,7 +87,7 @@ class Example extends Phaser.Scene {
             this.upgrade1.clearTint();
         });
         //upgrade 2
-        this.upgrade2 = this.add.text(cam.width * 0.85, 200, 'AI classmates - £' + this.up2, {
+        this.upgrade2 = this.add.text(this.scale.width * 0.85, 200, 'AI classmates - £' + this.up2, {
             font: '32px Arial',
             fill: '#ffffff'
         }).setDepth(9999); this.upgrade2.setScale(1.3,1.3); this.upgrade2.setOrigin(0.5, 0);
