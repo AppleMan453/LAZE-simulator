@@ -10,6 +10,7 @@ class Example extends Phaser.Scene {
     create () {
         const shirt = this.add.sprite(this.cameras.main.centerX,this.cameras.main.centerY, 'shirt').setInteractive();
         shirt.setScale(3,3)
+        this.uiContainer = this.add.container(0, 0);
         this.pound = 0;
         this.up1 = 10;
         this.up2 = 30;     
@@ -154,6 +155,8 @@ class Example extends Phaser.Scene {
             shirt.clearTint();
 
         });
+        this.uiContainer.add([this.shirt, this.scoreText, this.title,this.upgrade1,this.upgrade2,this.up1bg,this.up2bg]);
+
         //£ps
         this.time.addEvent({
             delay: 1000,      // 1000 ms = 1 second
