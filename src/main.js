@@ -8,9 +8,9 @@ class Example extends Phaser.Scene {
     }
 
     create () {
-        const shirt = this.add.sprite(this.cameras.main.centerX,this.cameras.main.centerY, 'shirt').setInteractive();
+        const cam = this.cameras.main;
+        const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive();
         shirt.setScale(3,3)
-        this.uiContainer = this.add.container(0, 0);
         this.pound = 0;
         this.up1 = 10;
         this.up2 = 30;     
@@ -23,23 +23,26 @@ class Example extends Phaser.Scene {
         };
         
 
-        this.scoreText = this.add.text( this.scale.width * 0.1 , 0, '£: ' + this.pound, {
+        this.scoreText = this.add.text( cam.width * 0.1 , 80, '£: ' + this.pound, {
             font: '32px Arial',
             fill: '#000000'
         }).setDepth(9999); this.scoreText.setScale(2,2); this.scoreText.setOrigin(0.5, 0);
+        this.scoreText.setFontSize(24);
 
         this.title = this.add.text(this.cameras.main.centerX, 0, 'LAZE SIMULATOR', {
             font: '32px Arial',
             fill: '#000000'
         }).setDepth(9999); this.title.setScale(2,2); this.title.setOrigin(0.5, 0)
+        this.scoreText.setFontSize(24);
 
       
 
         
-        this.upgrade1 = this.add.text(this.scale.width * 0.85, 100, 'Flynn Labour - £' + this.up1, {
+        this.upgrade1 = this.add.text(cam.width * 0.85, 100, 'Flynn Labour - £' + this.up1, {
             font: '32px Arial',
             fill: '#ffffff'
         }).setDepth(9999); this.upgrade1.setScale(1.3,1.3); this.upgrade1.setOrigin(0.5, 0);
+        this.upgrade1.setFontSize(20);
         const boundsup1 = this.upgrade1.getBounds();
         const up1bg = this.add.graphics();
         up1bg.fillStyle(0x000000, 1);
@@ -84,10 +87,11 @@ class Example extends Phaser.Scene {
             this.upgrade1.clearTint();
         });
         //upgrade 2
-        this.upgrade2 = this.add.text(this.scale.width * 0.85, 200, 'AI classmates - £' + this.up2, {
+        this.upgrade2 = this.add.text(cam.width * 0.85, 200, 'AI classmates - £' + this.up2, {
             font: '32px Arial',
             fill: '#ffffff'
         }).setDepth(9999); this.upgrade2.setScale(1.3,1.3); this.upgrade2.setOrigin(0.5, 0);
+        this.upgrade2.setFontSize(20);
         const boundsup2 = this.upgrade2.getBounds();
         const up2bg = this.add.graphics();
         up2bg.fillStyle(0x000000, 1);
@@ -170,6 +174,7 @@ class Example extends Phaser.Scene {
                 
             }
         });
+        
 
     }
 
@@ -182,15 +187,14 @@ const config = {
     type: Phaser.AUTO,
     parent: 'game-container',
 
-    width: window.innerWidth,
-    height: window.innerHeight,
+    scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+        width: 800,
+        height: 600
+    },
 
     backgroundColor: '#FFFFFF',
-
-    scale: {
-        mode: Phaser.Scale.FIT  ,
-        autoCenter: Phaser.Scale.CENTER_BOTH
-    },
     pixelArt: true,
     scene: Example
 };
