@@ -2,197 +2,123 @@ class Example extends Phaser.Scene {
 
     preload () {
         this.load.image('shirt', 'assets/shirt.png');
-        this.load.audio("coin","assets/COIN.mp3")
-        this.load.audio("broke","assets/broke.mp3")
-
+        this.load.audio("coin","assets/COIN.mp3");
+        this.load.audio("broke","assets/broke.mp3");
     }
 
     create () {
-        const shirt = this.add.sprite(this.cameras.main.centerX,this.cameras.main.centerY, 'shirt').setInteractive();
-        shirt.setScale(3,3)
-        this.uiContainer = this.add.container(0, 0);
+
+        // ----------------- VALUES -----------------
         this.pound = 0;
-        this.up1 = 10;
-        this.up2 = 30;     
-        const padding = 10;
         this.cps = 0;
-    
-        this.poundtext = () => {
-            this.scoreText.setText('£: ' + this.pound);
-        
-        };
-        
 
-        this.scoreText = this.add.text( this.scale.width * 0.1 , 0, '£: ' + this.pound, {
-            font: '32px Arial',
-            fill: '#000000'
-        }).setDepth(9999); this.scoreText.setScale(2,2); this.scoreText.setOrigin(0.5, 0);
+        this.upgrades = [
+            { name: "Flynn Labour", cost: 10, cps: 2 },
+            { name: "AI classmates", cost: 30, cps: 7 }
+        ];
 
-        this.title = this.add.text(this.cameras.main.centerX, 0, 'LAZE SIMULATOR', {
-            font: '32px Arial',
-            fill: '#000000'
-        }).setDepth(9999); this.title.setScale(2,2); this.title.setOrigin(0.5, 0);
+        // ----------------- PLAYER -----------------
+        const shirt = this.add.sprite(
+            this.scale.width * 0.4,
+            this.scale.height * 0.5,
+            'shirt'
+        ).setInteractive().setScale(3);
 
-      
-
-        
-        this.upgrade1 = this.add.text(this.scale.width * 0.75, 100, 'Flynn Labour - £' + this.up1, {
-            font: '32px Arial',
-            fill: '#ffffff'
-        }).setDepth(9999); this.upgrade1.setScale(1.3,1.3); this.upgrade1.setOrigin(0.5, 0);
-        const boundsup1 = this.upgrade1.getBounds();
-        const up1bg = this.add.graphics();
-        up1bg.fillStyle(0x000000, 1);
-
-        up1bg.fillRect(
-            boundsup1.x -padding,
-            boundsup1.y -padding,
-            boundsup1.width + padding * 2,
-            boundsup1.height + padding * 2
-        );
-        this.upgrade1.setInteractive();
-        //upgrade 1
-        this.upgrade1.on('pointerdown', (pointer) =>
-        {
-            if (this.pound>this.up1-1) {
-                this.upgrade1.setTint(0x096a09);
-                this.pound -= this.up1;
-                this.poundtext();
-                this.sound.play('coin');
-                this.up1 += 5
-                this.cps+=2
-                this.upgrade1.setText("Flynn Labour - £" + this.up1);
-            } else {
-                this.upgrade1.setTint(0xff0000);
-                this.sound.play('broke');
-            }
-           
-            
-
-        });
-
-        this.upgrade1.on('pointerout', (pointer) =>
-        {
-
-            this.upgrade1.clearTint();
-
-        });
-
-        this.upgrade1.on('pointerup', (pointer) =>
-        {
-
-            this.upgrade1.clearTint();
-        });
-        //upgrade 2
-        this.upgrade2 = this.add.text(this.scale.width * 0.75, 200, 'AI classmates - £' + this.up2, {
-            font: '32px Arial',
-            fill: '#ffffff'
-        }).setDepth(9999); this.upgrade2.setScale(1.3,1.3); this.upgrade2.setOrigin(0.5, 0);
-        const boundsup2 = this.upgrade2.getBounds();
-        const up2bg = this.add.graphics();
-        up2bg.fillStyle(0x000000, 1);
-
-        up2bg.fillRect(
-            boundsup2.x -padding,
-            boundsup2.y -padding,
-            boundsup2.width + padding * 2,
-            boundsup2.height + padding * 2
-        );
-        this.upgrade2.setInteractive();
-        this.upgrade2.on('pointerdown', (pointer) =>
-        {
-            if (this.pound>this.up2-1) {
-                this.upgrade2.setTint(0x096a09);
-                this.pound -= this.up2;
-                this.poundtext();
-                this.sound.play('coin');
-                this.up2 += 10
-                this.cps+=7
-                this.upgrade2.setText('AI classmates - £' + this.up2);
-            } else {
-                this.upgrade2.setTint(0xff0000);
-                this.sound.play('broke');
-            }
-           
-            
-
-        });
-
-        this.upgrade2.on('pointerout', (pointer) =>
-        {
-
-            this.upgrade2.clearTint();
-
-        });
-
-        this.upgrade2.on('pointerup', (pointer) =>
-        {
-
-            this.upgrade2.clearTint();
-        });
-        //Shirt
-        shirt.on('pointerdown', (pointer) =>
-        {
-
+        shirt.on('pointerdown', () => {
             shirt.setTint(0x0000ff);
-            this.pound += 1;
-            this.poundtext();
+            this.pound++;
+            this.updateMoney();
             this.sound.play('coin');
-            
-
         });
 
-        shirt.on('pointerout', function (pointer)
-        {
+        shirt.on('pointerup', () => shirt.clearTint());
+        shirt.on('pointerout', () => shirt.clearTint());
 
-            shirt.clearTint();
+        // ----------------- UI TEXT -----------------
+        this.scoreText = this.add.text(
+            this.scale.width * 0.05,
+            this.scale.height * 0.02,
+            '£: 0',
+            { font: '32px Arial', fill: '#000' }
+        ).setDepth(9999);
 
+        this.title = this.add.text(
+            this.scale.width * 0.5,
+            0,
+            'LAZE SIMULATOR',
+            { font: '32px Arial', fill: '#000' }
+        ).setOrigin(0.5, 0);
+
+        // ----------------- UPGRADES -----------------
+        const uiX = this.scale.width * 0.78;
+        const startY = this.scale.height * 0.2;
+        const spacing = this.scale.height * 0.12;
+
+        this.upgradeTexts = this.upgrades.map((u, i) => {
+            const text = this.add.text(
+                uiX,
+                startY + i * spacing,
+                `${u.name} - £${u.cost}`,
+                { font: '32px Arial', fill: '#fff' }
+            ).setOrigin(0.5, 0).setInteractive().setDepth(9999);
+
+            text.on('pointerdown', () => this.buyUpgrade(u, text));
+
+            text.on('pointerup', () => text.clearTint());
+            text.on('pointerout', () => text.clearTint());
+
+            return text;
         });
 
-        shirt.on('pointerup', function (pointer)
-        {
-
-            shirt.clearTint();
-
-        });
-        this.uiContainer.add([this.shirt, this.scoreText, this.title,this.upgrade1,this.upgrade2,this.up1bg,this.up2bg]);
-
-        //£ps
+        // ----------------- CPS TIMER -----------------
         this.time.addEvent({
-            delay: 1000,      // 1000 ms = 1 second
+            delay: 1000,
             loop: true,
             callback: () => {
                 this.pound += this.cps;
-                this.poundtext();
-                if (this.cps>0) {
-                    this.sound.play('coin');
-                    console.log(this.pound);
-                }
-                
+                this.updateMoney();
+                if (this.cps > 0) this.sound.play('coin');
             }
         });
-
     }
 
+    // ----------------- LOGIC -----------------
 
+    buyUpgrade(upgrade, text) {
+        if (this.pound >= upgrade.cost) {
+            this.pound -= upgrade.cost;
+            this.cps += upgrade.cps;
 
+            upgrade.cost = Math.floor(upgrade.cost * 1.5);
 
+            text.setText(`${upgrade.name} - £${upgrade.cost}`);
+            this.sound.play('coin');
+
+            this.updateMoney();
+        } else {
+            text.setTint(0xff0000);
+            this.sound.play('broke');
+        }
+    }
+
+    updateMoney() {
+        this.scoreText.setText('£: ' + this.pound);
+    }
 }
 
 const config = {
     type: Phaser.AUTO,
     parent: 'game-container',
-
     width: window.innerWidth,
     height: window.innerHeight,
 
     backgroundColor: '#FFFFFF',
 
     scale: {
-        mode: Phaser.Scale.FIT  ,
+        mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
-    pixelArt: true,
+
     scene: Example
 };
 
