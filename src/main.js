@@ -8,24 +8,23 @@ class Example extends Phaser.Scene {
 
     create () {
 
-        // ----------------- VALUES -----------------
+        const cam = this.cameras.main;
+
+        // ---------------- CORE VALUES ----------------
         this.pound = 0;
         this.cps = 0;
 
-        this.upgrades = [
-            { name: "Flynn Labour", cost: 10, cps: 2 },
-            { name: "AI classmates", cost: 30, cps: 7 }
-        ];
+        this.updateMoney = () =>
+            this.scoreText.setText('£: ' + this.pound);
 
-        // ----------------- PLAYER -----------------
+        // ---------------- PLAYER ----------------
         const shirt = this.add.sprite(
-            this.scale.width * 0.4,
-            this.scale.height * 0.5,
+            cam.centerX,
+            cam.centerY,
             'shirt'
         ).setInteractive().setScale(3);
 
         shirt.on('pointerdown', () => {
-            shirt.setTint(0x0000ff);
             this.pound++;
             this.updateMoney();
             this.sound.play('coin');
@@ -34,75 +33,63 @@ class Example extends Phaser.Scene {
         shirt.on('pointerup', () => shirt.clearTint());
         shirt.on('pointerout', () => shirt.clearTint());
 
-        // ----------------- UI TEXT -----------------
-        this.scoreText = this.add.text(
-            this.scale.width * 0.05,
-            this.scale.height * 0.02,
-            '£: 0',
-            { font: '32px Arial', fill: '#000' }
-        ).setDepth(9999);
+        // ---------------- UI ----------------
+        this.scoreText = this.add.text(20, 20, '£: 0', {
+            font: '32px Arial',
+            fill: '#000'
+        });
 
-        this.title = this.add.text(
-            this.scale.width * 0.5,
-            0,
-            'LAZE SIMULATOR',
-            { font: '32px Arial', fill: '#000' }
-        ).setOrigin(0.5, 0);
+        // ---------------- UPGRADES ----------------
+        this.upgrades = [
+            { name: "Flynn Labour", cost: 10, cps: 2 },
+            { name: "AI classmates", cost: 30, cps: 7 }
+        ];
 
-        // ----------------- UPGRADES -----------------
-        const uiX = this.scale.width * 0.78;
-        const startY = this.scale.height * 0.2;
-        const spacing = this.scale.height * 0.12;
+        const startX = cam.width * 0.75;
+        const startY = cam.height * 0.2;
+        const spacing = cam.height * 0.12;
 
-        this.upgradeTexts = this.upgrades.map((u, i) => {
+        this.upgrades.forEach((u, i) => {
+
             const text = this.add.text(
-                uiX,
+                startX,
                 startY + i * spacing,
                 `${u.name} - £${u.cost}`,
                 { font: '32px Arial', fill: '#fff' }
-            ).setOrigin(0.5, 0).setInteractive().setDepth(9999);
+            ).setInteractive().setDepth(9999);
 
-            text.on('pointerdown', () => this.buyUpgrade(u, text));
+            text.on('pointerdown', () => {
 
-            text.on('pointerup', () => text.clearTint());
+                if (this.pound >= u.cost) {
+
+                    this.pound -= u.cost;
+                    this.cps += u.cps;
+
+                    u.cost = Math.floor(u.cost * 1.5);
+
+                    text.setText(`${u.name} - £${u.cost}`);
+
+                    this.sound.play('coin');
+                    this.updateMoney();
+
+                } else {
+                    text.setTint(0xff0000);
+                    this.sound.play('broke');
+                }
+            });
+
             text.on('pointerout', () => text.clearTint());
-
-            return text;
         });
 
-        // ----------------- CPS TIMER -----------------
+        // ---------------- CPS ----------------
         this.time.addEvent({
             delay: 1000,
             loop: true,
             callback: () => {
                 this.pound += this.cps;
                 this.updateMoney();
-                if (this.cps > 0) this.sound.play('coin');
             }
         });
-    }
-
-    // ----------------- LOGIC -----------------
-
-    buyUpgrade(upgrade, text) {
-        if (this.pound >= upgrade.cost) {
-            this.pound -= upgrade.cost;
-            this.cps += upgrade.cps;
-
-            upgrade.cost = Math.floor(upgrade.cost * 1.5);
-
-            text.setText(`${upgrade.name} - £${upgrade.cost}`);
-            this.sound.play('coin');
-
-            this.updateMoney();
-        } else {
-            text.setTint(0xff0000);
-            this.sound.play('broke');
-        }
-    }
-
-    updateMoney() {
-        this.scoreText.setText('£: ' + this.pound);
     }
 }
 
@@ -122,4 +109,4 @@ const config = {
     scene: Example
 };
 
-const game = new Phaser.Game(config);
+new Phaser.Game(config);
