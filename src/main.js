@@ -8,28 +8,9 @@ class Example extends Phaser.Scene {
     }
 
     create () {
-        this.layoutUI = (width, height) => {
-
-            this.scoreText.setPosition(width * 0.1, 80);
-            this.title.setPosition(width * 0.5, 20);
-
-            this.upgrade1.setPosition(width * 0.85, height * 0.3);
-            this.upgrade2.setPosition(width * 0.85, height * 0.45);
-
-            this.shirt.setPosition(width * 0.4, height * 0.5);
-        };
-        this.scale.on('resize', (gameSize) => {
-            this.layoutUI(gameSize.width, gameSize.height);
-        });
-        this.layoutUI(this.scale.width, this.scale.height);
         const cam = this.cameras.main;
         const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive();
-        if (this.scale.width < 768) {
-            this.uiScale = Math.min(this.scale.width / 800, this.scale.height / 600);
-            shirt.setScale(this.uiScale)
-        } else {
-            shirt.setScale(3,3)
-        }
+        shirt.setScale(3,3)
         this.pound = 0;
         this.up1 = 10;
         this.up2 = 30;     
@@ -106,7 +87,7 @@ class Example extends Phaser.Scene {
             this.upgrade1.clearTint();
         });
         //upgrade 2
-        this.upgrade2 = this.add.text(this.scale.width * 0.85, 200, 'AI classmates - £' + this.up2, {
+        this.upgrade2 = this.add.text(cam.width * 0.85, 200, 'AI classmates - £' + this.up2, {
             font: '32px Arial',
             fill: '#ffffff'
         }).setDepth(9999); this.upgrade2.setScale(1.3,1.3); this.upgrade2.setOrigin(0.5, 0);
@@ -194,7 +175,7 @@ class Example extends Phaser.Scene {
             }
         });
         
-        
+
     }
 
 
