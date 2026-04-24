@@ -176,9 +176,9 @@
             // at the bottom of create()
             this.scale.on('orientationchange', (orientation) => {
                 if (orientation === Phaser.Scale.LANDSCAPE) {
-                    this.scale.resize(854, 480);
-                } else {
                     this.scale.resize(480, 854);
+                } else {
+                    this.scale.resize(854, 480);
                 }
                 this.scene.restart(); // rerun create() with new dimensions
             });
