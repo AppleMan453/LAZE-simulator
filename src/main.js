@@ -130,7 +130,12 @@
             });
             
             //Shirt
-            const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive().setScale(3,3).setDepth(0)
+            const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive().setDepth(0)
+            if (isMobile) {
+                shirt.setScale(2,2)
+            }else {
+                shirt.setScale(3,3)
+            }
             shirt.on('pointerdown', (pointer) =>
             {
 
