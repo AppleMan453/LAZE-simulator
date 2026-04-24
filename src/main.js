@@ -1,3 +1,4 @@
+    const isMobile = window.innerWidth < 768;
     class Example extends Phaser.Scene {
 
         preload () {
@@ -40,14 +41,14 @@
                 });
             };
             //money count
-            this.scoreText = this.add.text( cam.width *0.15 , 30, '£: ' + this.pound, {
+            this.scoreText = this.add.text( cam.width *0.15 , 30*scale, '£: ' + this.pound, {
                 font: '24px Arial',
                 fill: '#000000'
             }).setDepth(9999).setScale(2*scale,2*scale).setOrigin(0.5, 0);
             this.scoreText.setFontSize(24);
             //cps text
-            this.cpstext = this.add.text( cam.width * 0.15 , 130, 'CPS: ' + this.cps, {
-                font: '24px Aial',
+            this.cpstext = this.add.text( cam.width * 0.15 , 130*scale, 'CPS: ' + this.cps, {
+                font: '24px Arial',
                 fill: '#000000'
             }).setDepth(9999).setScale(2*scale,2*scale).setOrigin(0.5, 0);
             //title
@@ -58,7 +59,7 @@
             //upgrades
             upgrades.forEach((upgrade,index) => {
                 //getting the y position
-                const y = 100 + (index*80)
+                const y = (100 + (index*80)) *scale
                 let bp = false
 
                 const upgradetext = this.add.text(cam.width*0.82,y,`${upgrade.name} - £${upgrade.cost}`,{
@@ -95,6 +96,8 @@
                 upbg.setInteractive();
                 const rupbg = () => {
                     boundup = upgradetext.getBounds();
+                    upbg.clear();
+                    upbg.fillStyle(0x000000, 1); // add this back!  
                     upbg.fillRect(
                     boundup.x -padding,
                     boundup.y -padding,
@@ -131,12 +134,7 @@
             });
             
             //Shirt
-            const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive().setDepth(0)
-            if (window.innerWidth < 768) {
-                shirt.setScale(2,2);
-            }else{
-                shirt.setScale(3,3);
-            }
+            const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive().setDepth(0).setScale(3*scale,3*scale)
             shirt.on('pointerdown', (pointer) =>
             {
 
@@ -191,7 +189,6 @@
 
 
     }
-    const isMobile = window.innerWidth < 768;
     const config = {
         type: Phaser.AUTO,
         parent: 'game-container',
