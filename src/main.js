@@ -134,7 +134,7 @@
             if (isMobile) {
                 shirt.setScale(1,1)
             }else {
-                shirt.setScale(3,3)
+                shirt.setScale(2,2)
             }
             shirt.on('pointerdown', (pointer) =>
             {
