@@ -8,150 +8,129 @@
         }
 
         create () {
+            //variables
             const cam = this.cameras.main;
-            
-            const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive();
-            shirt.setScale(2,2)
+            const clearTint = (upgrade) => upgrade.clearTint();
+            const upgrades = [
+                { name: "Flynn worker",cost: 10,cps: 2,amount:0 },
+                { name: "AI classmates",cost: 30,cps: 5,amount:0},
+                { name: "Catch James",cost: 60,cps: 10,amount:0},
+                { name: "FACTORY",cost: 100,cps: 20,amount:0},
+
+
+            ];
+            this.pound = 0;
+            const padding = 5;
+            this.cps = 0;
             //orientation
             this.scale.on('orientationchange', (orientation) => {
                 if (orientation === Phaser.Scale.LANDSCAPE) {
+                    //something 
                 } else {
+                    //will do it later
                 }
-            });
-            this.pound = 0;
-            this.up1 = 10;
-            this.up2 = 30;     
-            const padding = -50;
-            this.cps = 0;
-        
+            });           
+            //update money counter function
             this.poundtext = () => {
+                this.scoreText.setColor('#00ff00');
                 this.scoreText.setText('£: ' + this.pound);
+                this.time.delayedCall(200, () => {
+                    this.scoreText.setColor('#000000');
+                });
             };
-            
-
-            this.scoreText = this.add.text( cam.width * 0.07 , 50, '£: ' + this.pound, {
-                font: '32px Arial',
+            //money count
+            this.scoreText = this.add.text( cam.width *0.15 , 30, '£: ' + this.pound, {
+                font: '24px Arial',
                 fill: '#000000'
-            }).setDepth(9999); this.scoreText.setScale(2,2); this.scoreText.setOrigin(0.5, 0);
+            }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0);
             this.scoreText.setFontSize(24);
-            this.cpstext = this.add.text( cam.width * 0.1 , 150, 'CPS: ' + this.cps, {
-                font: '32px Arial',
+            //cps text
+            this.cpstext = this.add.text( cam.width * 0.15 , 130, 'CPS: ' + this.cps, {
+                font: '24px Aial',
                 fill: '#000000'
-            }).setDepth(9999); this.cpstext.setScale(2,2); this.cpstext.setOrigin(0.5, 0);
-            this.cpstext.setFontSize(24);
-
-
+            }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0);
+            //title
             this.title = this.add.text(this.cameras.main.centerX, 0, 'LAZE SIMULATOR', {
                 font: '32px Arial',
                 fill: '#000000'
-            }).setDepth(9999); this.title.setScale(2,2); this.title.setOrigin(0.5, 0)
+            }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0)
+            //upgrades
+            upgrades.forEach((upgrade,index) => {
+                //getting the y position
+                const y = 100 + (index*80)
+                let bp = false
 
-        
+                const upgradetext = this.add.text(cam.width*0.82,y,`${upgrade.name} - £${upgrade.cost}`,{
+                    font: '20px Arial',
+                    fill: '#ffffff'
+                }).setInteractive().setDepth(9999).setScale(2,2).setOrigin(0.5, 0.5);
 
-            
-            this.upgrade1 = this.add.text(cam.width * 0.85, 100, 'Flynn Labour - £' + this.up1, {
-                font: '32px Arial',
-                fill: '#ffffff'
-            }).setDepth(9999); this.upgrade1.setScale(1.2,1.2); this.upgrade1.setOrigin(0.5, 0);
-            const boundsup1 = this.upgrade1.getBounds();
-            const up1bg = this.add.graphics();
-            up1bg.fillStyle(0x000000, 1);
-            this.upgrade1.setFontSize(20);
+                upgradetext.on("pointerdown",()=>{
+                    if (this.pound>upgrade.cost-1 && bp === false) {
+                        bp = true
+                        upgradetext.setTint(0x90ee90);
+                        this.pound -= upgrade.cost; 
+                        this.poundtext();
+                        this.sound.play('coin');
+                        upgrade.cost += 5;
+                        upgrade.amount += 1;
+                        this.cps += upgrade.cps;
+                        upgradetext.setText(`${upgrade.amount} - ${upgrade.name} - £${upgrade.cost}`);
+                        this.cpstext.setText('CPS: ' + this.cps);
+                        rupbg();
 
-
-            up1bg.fillRect(
-                boundsup1.x -padding,
-                boundsup1.y -padding,
-                boundsup1.width + padding * 2,
-                boundsup1.height + padding * 2
-            );
-            this.upgrade1.setInteractive();
-            //upgrade 1
-            this.upgrade1.on('pointerdown', (pointer) =>
-            {
-                if (this.pound>this.up1-1) {
-                    this.upgrade1.setTint(0x096a09);
-                    this.pound -= this.up1;
-                    this.poundtext();
-                    this.sound.play('coin');
-                    this.up1 += 5
-                    this.cps+=2
-                    this.upgrade1.setText("Flynn Labour - £" + this.up1);
-                    this.cpstext.setText('CPS: ' + this.cps);
-
-                } else {
-                    this.upgrade1.setTint(0xff0000);
-                    this.sound.play('broke');
-                }
-            
+                    } else {
+                        upgradetext.setTint(0xff0000);
+                        this.sound.play('broke');
+                    }
+                })
                 
+                upgradetext.on('pointerout', () => {clearTint(upgradetext);bp = false});
+                upgradetext.on('pointerup', () => {clearTint(upgradetext);bp = false});
 
-            });
-
-            this.upgrade1.on('pointerout', (pointer) =>
-            {
-
-                this.upgrade1.clearTint();
-
-            });
-
-            this.upgrade1.on('pointerup', (pointer) =>
-            {
-
-                this.upgrade1.clearTint();
-            });
-            //upgrade 2
-            this.upgrade2 = this.add.text(cam.width * 0.85, 200, 'AI classmates - £' + this.up2, {
-                font: '32px Arial',
-                fill: '#ffffff'
-            }).setDepth(9999); this.upgrade2.setScale(1.2,1.2); this.upgrade2.setOrigin(0.5, 0);
-            const boundsup2 = this.upgrade2.getBounds();
-            const up2bg = this.add.graphics();
-            up2bg.fillStyle(0x000000, 1);
-            this.upgrade2.setFontSize(20);
-
-
-            up2bg.fillRect(
-                boundsup2.x -padding,
-                boundsup2.y -padding,
-                boundsup2.width + padding * 2,
-                boundsup2.height + padding * 2
-            );
-            this.upgrade2.setInteractive();
-            this.upgrade2.on('pointerdown', (pointer) =>
-            {
-                if (this.pound>this.up2-1) {
-                    this.upgrade2.setTint(0x096a09);
-                    this.pound -= this.up2;
-                    this.poundtext();
-                    this.sound.play('coin');
-                    this.up2 += 10
-                    this.cps+=7
-                    this.upgrade2.setText('AI classmates - £' + this.up2);
-                    this.cpstext.setText('CPS: ' + this.cps);
-
-                } else {
-                    this.upgrade2.setTint(0xff0000);
-                    this.sound.play('broke');
-                }
-            
+                let boundup = upgradetext.getBounds();
+                const upbg = this.add.graphics();
+                upbg.fillStyle(0x000000, 1);
+                upbg.setInteractive();
+                const rupbg = () => {
+                    boundup = upgradetext.getBounds();
+                    upbg.fillRect(
+                    boundup.x -padding,
+                    boundup.y -padding,
+                    boundup.width + padding * 2,
+                    boundup.height + padding * 2
+                )}
+                rupbg();
                 
+              
+
+                upbg.on("pointerdown",()=>{
+                    if (this.pound>upgrade.cost-1 && bp === false) {
+                        bp = true
+                        upgradetext.setTint(0x90ee90);
+                        this.pound -= upgrade.cost;
+                        this.poundtext();
+                        this.sound.play('coin');
+                        upgrade.cost += 5;
+                        upgrade.amount += 1;
+                        this.cps += upgrade.cps;
+                        upgradetext.setText(`${upgrade.amount} - ${upgrade.name} - £${upgrade.cost}`);
+                        this.cpstext.setText('CPS: ' + this.cps);
+                        rupbg();
+
+                    } else {
+                        upgradetext.setTint(0xff0000);
+                        this.sound.play('broke');
+                    }
+                })
+                
+                upbg.on('pointerout', () => {clearTint(upgradetext);bp = false});
+                upbg.on('pointerup', () => {clearTint(upgradetext);bp = false});
 
             });
-
-            this.upgrade2.on('pointerout', (pointer) =>
-            {
-
-                this.upgrade2.clearTint();
-
-            });
-
-            this.upgrade2.on('pointerup', (pointer) =>
-            {
-
-                this.upgrade2.clearTint();
-            });
+            
             //Shirt
+            const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive().setScale(3,3).setDepth(0)
             shirt.on('pointerdown', (pointer) =>
             {
 
@@ -176,15 +155,14 @@
                 shirt.clearTint();
 
             });
-
-            //£ps
+            //CPS
             this.time.addEvent({
                 delay: 1000,      // 1000 ms = 1 second
                 loop: true,
                 callback: () => {
-                    this.pound += this.cps;
-                    this.poundtext();
                     if (this.cps>0) {
+                        this.pound += this.cps;
+                        this.poundtext();
                         this.sound.play('coin');
                         console.log(this.pound);
                     }
