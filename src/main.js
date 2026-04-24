@@ -131,10 +131,10 @@
             
             //Shirt
             const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive().setDepth(0)
-            if (isMobile) {
-                shirt.setScale(1,1)
-            }else {
-                shirt.setScale(2,2)
+            if (window.innerWidth < 768) {
+                shirt.setScale(2,2);
+            }else{
+                shirt.setScale(3,3);
             }
             shirt.on('pointerdown', (pointer) =>
             {
