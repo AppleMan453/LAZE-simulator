@@ -207,7 +207,7 @@
             mode: Phaser.Scale.FIT,
             autoCenter: Phaser.Scale.CENTER_BOTH,
             width: isMobile ? 854 : 1280,
-            height: isMobile ? 4800 : 720,  
+            height: isMobile ? 480 : 720,  
             
         },
 
