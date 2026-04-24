@@ -132,7 +132,7 @@
             //Shirt
             const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive().setDepth(0)
             if (isMobile) {
-                shirt.setScale(2,2)
+                shirt.setScale(1,1)
             }else {
                 shirt.setScale(3,3)
             }
