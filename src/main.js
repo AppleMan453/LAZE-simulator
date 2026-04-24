@@ -17,7 +17,7 @@
                 if (orientation === Phaser.Scale.LANDSCAPE) {
                     this.scale.resize(854, 480);
                 } else {
-                this.scale.resize(480, 854);
+                    this.scale.resize(480, 854);
                 }
             });
             this.pound = 0;
@@ -206,7 +206,7 @@
         parent: 'game-container',
         
         scale: {
-            mode: Phaser.Scale.FIT,
+            mode: Phaser.Scale.RESIZE,
             autoCenter: Phaser.Scale.CENTER_BOTH,
             width: isMobile ? 854 : 1280,
             height: isMobile ? 4800 : 720,
