@@ -72,7 +72,7 @@
                         this.pound -= upgrade.cost; 
                         this.poundtext();
                         this.sound.play('coin');
-                        upgrade.cost += 5;
+                        upgrade.cost = Math.round(upgrade.cost*1.2);
                         upgrade.amount += 1;
                         this.cps += upgrade.cps;
                         upgradetext.setText(`${upgrade.amount} - ${upgrade.name} - £${upgrade.cost}`);
