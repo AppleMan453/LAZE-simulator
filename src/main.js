@@ -59,7 +59,7 @@
             //upgrades
             upgrades.forEach((upgrade,index) => {
                 //getting the y position
-                const y = (100 + (index*80)) *scale
+                const y = (H * 0.55) + (index * 60 * scale)
                 let bp = false
 
                 const upgradetext = this.add.text(cam.width*0.82,y,`${upgrade.name} - £${upgrade.cost}`,{
@@ -134,7 +134,7 @@
             });
             
             //Shirt
-            const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive().setDepth(0).setScale(3*scale,3*scale)
+            const shirt = this.add.sprite(cam.centerX,H * 0.35, 'shirt').setInteractive().setDepth(0).setScale(3*scale,3*scale)
             shirt.on('pointerdown', (pointer) =>
             {
 
@@ -176,11 +176,11 @@
             // at the bottom of create()
             this.scale.on('orientationchange', (orientation) => {
                 if (orientation === Phaser.Scale.LANDSCAPE) {
-                    this.scale.resize(480, 854);
-                } else {
                     this.scale.resize(854, 480);
+                } else {
+                    this.scale.resize(480, 854);
                 }
-                this.scene.restart(); // rerun create() with new dimensions
+                this.scene.restart(); 
             });
 
         }
