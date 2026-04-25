@@ -8,14 +8,6 @@
         }
 
         create () {
-            if (isMobile) {
-                this.WH = 480
-            }else {
-                this.WH = 1280
-            }
-            const W = this.scale.width;
-            const H = this.scale.height;
-            const scale = W / this.WH; 
             //variables
             const cam = this.cameras.main;
             const clearTint = (upgrade) => upgrade.clearTint();
@@ -140,9 +132,9 @@
             //Shirt
             const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive().setDepth(0)
             if (window.innerWidth < 768) {
-                shirt.setScale(2,2);
+                shirt.setScale(2,2)
             }else{
-                shirt.setScale(3,3);
+                shirt.setScale(3,3)
             }
             shirt.on('pointerdown', (pointer) =>
             {
@@ -197,8 +189,8 @@
         scale: {
             mode: Phaser.Scale.FIT,
             autoCenter: Phaser.Scale.CENTER_BOTH,
-            width: isMobile ? 480 : 1280,
-            height: isMobile ? 854 : 720,
+            width: isMobile ? 854 : 1280,
+            height: isMobile ? 480 : 720,  
             
         },
 
