@@ -63,7 +63,7 @@
                 const upgradetext = this.add.text(cam.width*0.82,y,`${upgrade.name} - £${upgrade.cost}`,{
                     font: '20px Arial',
                     fill: '#ffffff'
-                }).setInteractive().setDepth(9999).setScale1.5,1.5).setOrigin(0.5, 0.5);
+                }).setInteractive().setDepth(9999).setScale(1.5,1.5).setOrigin(0.5, 0.5);
 
                 upgradetext.on("pointerdown",()=>{
                     if (this.pound>upgrade.cost-1 && bp === false) {
