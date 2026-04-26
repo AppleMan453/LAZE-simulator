@@ -182,7 +182,7 @@
         parent: 'game-container',
         
         scale: {
-            mode: Phaser.Scale.FIT,
+            mode: Phaser.Scale.RESIZE,
             autoCenter: Phaser.Scale.CENTER_BOTH,
             width: isMobile ? 854 : 1280,
             height: isMobile ? 480 : 720,  
