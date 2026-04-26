@@ -92,6 +92,7 @@
                 const upbg = this.add.graphics();
                 upbg.fillStyle(0x000000, 1);
                 upbg.setInteractive();
+                upbg.setdepth(9999);
                 const rupbg = () => {
                     boundup = upgradetext.getBounds();
                     upbg.fillRect(
