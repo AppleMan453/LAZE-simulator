@@ -39,13 +39,13 @@
                 });
             };
             //money count
-            this.scoreText = this.add.text( cam.width *0.03,30, '£: ' + this.pound, {
+            this.scoreText = this.add.text( cam.width *0.02,30, '£: ' + this.pound, {
                 font: '24px Arial',
                 fill: '#000000'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0);
             this.scoreText.setFontSize(24);
             //cps text
-            this.cpstext = this.add.text( cam.width *0.03,130, 'CPS: ' + this.cps, {
+            this.cpstext = this.add.text( cam.width *0.02,130, 'CPS: ' + this.cps, {
                 font: '24px Aial',
                 fill: '#000000'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0);
