@@ -130,7 +130,7 @@
             });
             
             //Shirt 
-            const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive().setScale(2,2)setDepth(0)
+            const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive().setScale(2,2).setDepth(0)
             shirt.on('pointerdown', (pointer) =>
             {
 
