@@ -39,13 +39,13 @@
                 });
             };
             //money count
-            this.scoreText = this.add.text( cam.width *0.15 , 30, '£: ' + this.pound, {
+            this.scoreText = this.add.text( cam.width *0.1, 30, '£: ' + this.pound, {
                 font: '24px Arial',
                 fill: '#000000'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0);
             this.scoreText.setFontSize(24);
             //cps text
-            this.cpstext = this.add.text( cam.width * 0.15 , 130, 'CPS: ' + this.cps, {
+            this.cpstext = this.add.text( cam.width * 0.10, 130, 'CPS: ' + this.cps, {
                 font: '24px Aial',
                 fill: '#000000'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0);
@@ -130,7 +130,7 @@
             });
             
             //Shirt
-            const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive().setScale(2,2).setDepth(0)
+            const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive().setScale(1.5,1.5)setDepth(0)
             shirt.on('pointerdown', (pointer) =>
             {
 
