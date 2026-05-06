@@ -11,15 +11,19 @@
             //variables
             const cam = this.cameras.main;
             const clearTint = (upgrade) => upgrade.clearTint();
+            this.clothprice = 100;
+            this.cpc = 1;
+            this.basecolor = 0xffffff;
             const upgrades = [
                 { name: "Flynn worker",cost: 10,cps: 2,amount:0 },
                 { name: "AI classmates",cost: 30,cps: 5,amount:0},
                 { name: "Catch James",cost: 60,cps: 10,amount:0},
                 { name: "FACTORY",cost: 100,cps: 20,amount:0},
-                { name: "Boss Elijah",cost: 10000,cps: 1000,amount:0},
+                { name: "Boss Eli",cost: 10000,cps: 2000,amount:0},
 
 
             ];
+
             this.pound = 0;
             const padding = 5;
             this.cps = 0;
@@ -40,13 +44,18 @@
                 });
             };
             //money count
-            this.scoreText = this.add.text( cam.width *0.1,50,'£: ' + this.pound, {
+            this.scoreText = this.add.text( cam.width *0.15 , 30, '£: ' + this.pound, {
                 font: '24px Arial',
                 fill: '#000000'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0);
             this.scoreText.setFontSize(24);
             //cps text
-            this.cpstext = this.add.text( cam.width *0.1,150, 'CPS: ' + this.cps, {
+            this.cpstext = this.add.text( cam.width * 0.15 , 130, 'CPS: ' + this.cps, {
+                font: '24px Aial',
+                fill: '#000000'
+            }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0);
+            //cpc
+            this.cpctext = this.add.text( cam.width * 0.15 , 230, 'CPC: ' + this.cpc, {
                 font: '24px Aial',
                 fill: '#000000'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0);
@@ -55,6 +64,73 @@
                 font: '32px Arial',
                 fill: '#000000'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0)
+            //clothes
+            let bpcl = false
+            const clotheup = this.add.text(cam.width * 0.2, 500,`${this.clothprice} - Buy new shirt`, {
+                font: '20px Arial',
+                fill: '#ffffff'
+            }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0).setInteractive();
+            clotheup.on("pointerdown",()=>{
+                if (this.pound>this.clothprice-1 && bpcl===false) {
+                    clotheup.setTint(0x90ee90);
+                    bpcl = true
+                    this.pound -= this.clothprice; 
+                    this.poundtext();
+                    this.sound.play('coin');
+                    this.clothprice =  Math.round(1.2*this.clothprice);
+                    shirtcolor();
+                    this.cpc =  Math.round(1.5*this.cpc);
+                    clotheup.setText(`${this.clothprice} - Buy new shirt`);
+                    this.cpctext.setText('CPC: ' + this.cpc);
+                    rclbg();
+                } else {
+                    clotheup.setTint(0xff0000);
+                    this.sound.play('broke');
+                }
+            })
+                
+            clotheup.on('pointerout', () => {clearTint(clotheup);bpcl = false});
+            clotheup.on('pointerup', () => {clearTint(clotheup);bpcl = false});
+            let boundupcl = clotheup.getBounds();
+            const clbg = this.add.graphics();
+            clbg.fillStyle(0x000000, 1);
+            clbg.setInteractive();
+
+            const rclbg = () => {
+                boundupcl = clotheup.getBounds();
+                clbg.fillRect(
+                boundupcl.x -padding,
+                boundupcl.y -padding,
+                boundupcl.width + padding * 2,
+                boundupcl.height + padding * 2
+            )}
+            rclbg();
+                
+              
+
+            clbg.on("pointerdown",()=>{
+                if (this.pound>clothprice-1 && bpcl === false) {
+                    clotheup.setTint(0x90ee90);
+                    bpcl = true
+                    this.pound -= this.clothprice; 
+                    this.poundtext();
+                    this.sound.play('coin');
+                    shirtcolor();
+                    this.clothprice *=  2;
+                    this.cpc =  Math.round(1.5*this.cpc);
+                    clotheup.setText(`${this.clothprice} - Buy new shirt`);
+                    this.cpctext.setText('CPC: ' + this.cpc);
+                    rclbg();
+
+                } else {
+                    clotheup.setTint(0xff0000);
+                    this.sound.play('broke');
+                }
+            })
+                
+            clbg.on('pointerout', () => {clearTint(clotheup);bpcl = false});
+            clbg.on('pointerup', () => {clearTint(clotheup);bpcl = false});
+
             //upgrades
             upgrades.forEach((upgrade,index) => {
                 //getting the y position
@@ -64,7 +140,7 @@
                 const upgradetext = this.add.text(cam.width*0.82,y,`${upgrade.name} - £${upgrade.cost}`,{
                     font: '20px Arial',
                     fill: '#ffffff'
-                }).setInteractive().setDepth(9999).setScale(1.5,1.5).setOrigin(0.5, 0.5);
+                }).setInteractive().setDepth(9999).setScale(2,2).setOrigin(0.5, 0.5);
 
                 upgradetext.on("pointerdown",()=>{
                     if (this.pound>upgrade.cost-1 && bp === false) {
@@ -73,7 +149,7 @@
                         this.pound -= upgrade.cost; 
                         this.poundtext();
                         this.sound.play('coin');
-                        upgrade.cost = Math.round(upgrade.cost*1.2);
+                        upgrade.cost = Math.round(1.2*upgrade.cost);
                         upgrade.amount += 1;
                         this.cps += upgrade.cps;
                         upgradetext.setText(`${upgrade.amount} - ${upgrade.name} - £${upgrade.cost}`);
@@ -93,12 +169,6 @@
                 const upbg = this.add.graphics();
                 upbg.fillStyle(0x000000, 1);
                 upbg.setInteractive();
-                upbg.setDepth(100);
-
-                
-
-                
-
                 const rupbg = () => {
                     boundup = upgradetext.getBounds();
                     upbg.fillRect(
@@ -118,7 +188,7 @@
                         this.pound -= upgrade.cost;
                         this.poundtext();
                         this.sound.play('coin');
-                        upgrade.cost += 5;
+                        upgrade.cost = Math.round(1.2*upgrade.cost);
                         upgrade.amount += 1;
                         this.cps += upgrade.cps;
                         upgradetext.setText(`${upgrade.amount} - ${upgrade.name} - £${upgrade.cost}`);
@@ -136,32 +206,29 @@
 
             });
             
-            //Shirt 
-            const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive().setScale(2,2).setDepth(0)
+            //Shirt
+            const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive().setScale(3,3).setDepth(0)
+            const shirtcolor = () => {
+                let color = Phaser.Math.Between(0, 0xffffff)
+                shirt.setTint(color);
+                this.basecolor = color;
+
+            }
             shirt.on('pointerdown', (pointer) =>
             {
 
                 shirt.setTint(0x0000ff);
-                this.pound += 1;
+                this.pound += this.cpc;
                 this.poundtext();
                 this.sound.play('coin');
                 
 
             });
 
-            shirt.on('pointerout', function (pointer)
-            {
+            shirt.on('pointerout', () => {shirt.setTint(this.basecolor)});
+            shirt.on('pointerup', () => {shirt.setTint(this.basecolor)});
 
-                shirt.clearTint();
-
-            });
-
-            shirt.on('pointerup', function (pointer)
-            {
-
-                shirt.clearTint();
-
-            });
+       
             //CPS
             this.time.addEvent({
                 delay: 1000,      // 1000 ms = 1 second
@@ -191,8 +258,8 @@
         scale: {
             mode: Phaser.Scale.FIT,
             autoCenter: Phaser.Scale.CENTER_BOTH,
-            width: isMobile ? 854 : 1280,
-            height: isMobile ? 480 : 720,  
+            width:1280,
+            height:720,  
             
         },
 
