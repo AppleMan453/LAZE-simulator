@@ -16,6 +16,7 @@
                 { name: "AI classmates",cost: 30,cps: 5,amount:0},
                 { name: "Catch James",cost: 60,cps: 10,amount:0},
                 { name: "FACTORY",cost: 100,cps: 20,amount:0},
+                { name: "Boss Elijah",cost: 10000,cps: 1000,amount:0},
 
 
             ];
