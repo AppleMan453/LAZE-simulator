@@ -12,8 +12,15 @@
             const cam = this.cameras.main;
             const clearTint = (upgrade) => upgrade.clearTint();
             this.clothprice = 100;
+            this.firstbuy = true;
             this.cpc = 1;
             this.basecolor = 0xffffff;
+            const shirtcolor = () => {
+                this.color = Phaser.Math.Between(0, 0xffffff)
+                shirt.setTint(this.color);
+                this.basecolor = this.color;
+
+            };
             const upgrades = [
                 { name: "Flynn worker",cost: 10,cps: 2,amount:0 },
                 { name: "AI classmates",cost: 30,cps: 5,amount:0},
@@ -72,17 +79,23 @@
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0).setInteractive();
             clotheup.on("pointerdown",()=>{
                 if (this.pound>this.clothprice-1 && bpcl===false) {
-                    clotheup.setTint(0x90ee90);
+                     clotheup.setTint(0x90ee90);
                     bpcl = true
                     this.pound -= this.clothprice; 
                     this.poundtext();
                     this.sound.play('coin');
-                    this.clothprice =  Math.round(1.2*this.clothprice);
                     shirtcolor();
-                    this.cpc =  Math.round(1.5*this.cpc);
+                    this.clothprice *=  2;
+                    if (this.firstbuy === true) {
+                        this.cpc = 2
+                        this.firstbuy = false;
+                    } else {
+                        this.cpc =  Math.round(1.2*this.cpc);
+                    }
                     clotheup.setText(`${this.clothprice} - Buy new shirt`);
                     this.cpctext.setText('CPC: ' + this.cpc);
                     rclbg();
+
                 } else {
                     clotheup.setTint(0xff0000);
                     this.sound.play('broke');
@@ -117,7 +130,12 @@
                     this.sound.play('coin');
                     shirtcolor();
                     this.clothprice *=  2;
-                    this.cpc =  Math.round(1.5*this.cpc);
+                    if (this.firstbuy === true) {
+                        this.cpc = 2
+                        this.firstbuy = false;
+                    } else {
+                        this.cpc =  Math.round(1.2*this.cpc);
+                    }
                     clotheup.setText(`${this.clothprice} - Buy new shirt`);
                     this.cpctext.setText('CPC: ' + this.cpc);
                     rclbg();
@@ -208,12 +226,6 @@
             
             //Shirt
             const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive().setScale(3,3).setDepth(0)
-            const shirtcolor = () => {
-                let color = Phaser.Math.Between(0, 0xffffff)
-                shirt.setTint(color);
-                this.basecolor = color;
-
-            }
             shirt.on('pointerdown', (pointer) =>
             {
 
