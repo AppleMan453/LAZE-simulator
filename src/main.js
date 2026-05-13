@@ -2,8 +2,10 @@
 
         preload () {
             this.load.image('shirt', 'assets/shirt.png');
+            this.load.image('hate', 'assets/HATE.png');
             this.load.audio("coin","assets/COIN.mp3")
             this.load.audio("broke","assets/broke.mp3")
+
 
         }
 
@@ -14,10 +16,15 @@
             this.clothprice = 100;
             this.firstbuy = true;
             this.cpc = 1;
+            this.totalhater = 0;
+            const shirtcolors = [0xff0000,0x00008b,0x800080,0xffff00,0x00ff00,0xffc0cb]
             this.basecolor = 0xffffff;
             const shirtcolor = () => {
-                this.color = Phaser.Math.Between(0, 0xffffff)
+                this.color = Phaser.Utils.Array.GetRandom(shirtcolors);
+
+                console.log(this.color)
                 shirt.setTint(this.color);
+                console.log(shirt.tint)
                 this.basecolor = this.color;
 
             };
@@ -43,8 +50,8 @@
                 }
             });           
             //update money counter function
-            this.poundtext = () => {
-                this.scoreText.setColor('#00ff00');
+            this.poundtext = (color) => {
+                this.scoreText.setColor(color); //'#00ff00'
                 this.scoreText.setText('£: ' + this.pound);
                 this.time.delayedCall(200, () => {
                     this.scoreText.setColor('#000000');
@@ -79,16 +86,21 @@
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0).setInteractive();
             clotheup.on("pointerdown",()=>{
                 if (this.pound>this.clothprice-1 && bpcl===false) {
-                     clotheup.setTint(0x90ee90);
+                    clotheup.setTint(0x90ee90);
                     bpcl = true
                     this.pound -= this.clothprice; 
-                    this.poundtext();
+                    this.poundtext('#ff0000');
                     this.sound.play('coin');
                     shirtcolor();
                     this.clothprice *=  2;
                     if (this.firstbuy === true) {
-                        this.cpc = 2
-                        this.firstbuy = false;
+                        if (this.cpc === 1){
+                            shirt.preFX.addColorMatrix().brightness(10);
+                        }
+                        this.cpc += 1
+                        if (this.cpc === 3){
+                            this.firstbuy = false;
+                        }
                     } else {
                         this.cpc =  Math.round(1.2*this.cpc);
                     }
@@ -126,13 +138,18 @@
                     clotheup.setTint(0x90ee90);
                     bpcl = true
                     this.pound -= this.clothprice; 
-                    this.poundtext();
+                    this.poundtext('#ff0000');
                     this.sound.play('coin');
                     shirtcolor();
                     this.clothprice *=  2;
                     if (this.firstbuy === true) {
-                        this.cpc = 2
-                        this.firstbuy = false;
+                        if (this.cpc === 1){
+                            shirt.preFX.addColorMatrix().brightness(10);
+                        }
+                        this.cpc += 1
+                        if (this.cpc === 3){
+                            this.firstbuy = false;
+                        }
                     } else {
                         this.cpc =  Math.round(1.2*this.cpc);
                     }
@@ -165,7 +182,7 @@
                         bp = true
                         upgradetext.setTint(0x90ee90);
                         this.pound -= upgrade.cost; 
-                        this.poundtext();
+                        this.poundtext('#ff0000');
                         this.sound.play('coin');
                         upgrade.cost = Math.round(1.2*upgrade.cost);
                         upgrade.amount += 1;
@@ -187,6 +204,7 @@
                 const upbg = this.add.graphics();
                 upbg.fillStyle(0x000000, 1);
                 upbg.setInteractive();
+                upbg.setDepth(9998);
                 const rupbg = () => {
                     boundup = upgradetext.getBounds();
                     upbg.fillRect(
@@ -204,7 +222,7 @@
                         bp = true
                         upgradetext.setTint(0x90ee90);
                         this.pound -= upgrade.cost;
-                        this.poundtext();
+                        this.poundtext('#ff0000');
                         this.sound.play('coin');
                         upgrade.cost = Math.round(1.2*upgrade.cost);
                         upgrade.amount += 1;
@@ -226,12 +244,13 @@
             
             //Shirt
             const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive().setScale(3,3).setDepth(0)
+
             shirt.on('pointerdown', (pointer) =>
             {
 
                 shirt.setTint(0x0000ff);
                 this.pound += this.cpc;
-                this.poundtext();
+                this.poundtext('#00ff00');
                 this.sound.play('coin');
                 
 
@@ -239,6 +258,75 @@
 
             shirt.on('pointerout', () => {shirt.setTint(this.basecolor)});
             shirt.on('pointerup', () => {shirt.setTint(this.basecolor)});
+            //HATERS
+
+            const spawn = () => {
+                let spawnran = cam.centerX * Phaser.Math.FloatBetween(0, 3);
+                let sizeran = Phaser.Math.FloatBetween(0.5, 3);
+                let HATE = this.add.sprite(spawnran,cam.centerY*2, 'hate').setInteractive().setDepth(99999).setScale(sizeran,sizeran);
+
+                HATE.on('pointerdown', (pointer) => {
+
+                    HATE.setTint(0xff0000);
+                    this.pound += this.cpc*100;
+                    this.poundtext('#00ff00');
+                    this.sound.play('coin');
+                    this.totalhater -= 1
+                    this.time.delayedCall(125, () => {
+                        HATE.destroy();
+                        kill.remove();
+                        move.remove();
+                    }, [], this);
+                    
+
+                });
+
+                HATE.on('pointerout', () => {HATE.clearTint()});
+                HATE.on('pointerup', () => {HATE.clearTint()});
+                
+                let move = this.tweens.add({
+                    targets: HATE,
+                    x: cam.centerX,            
+                    y: cam.centerY,             
+                    duration: 2000,       
+                    ease: 'Power2',
+                    yoyo: false,           
+                    loop: 0              
+                });
+                let kill = this.time.addEvent({
+                    delay: 2000,      
+                    loop: true,
+                    callback: () => {
+                        if (this.pound - Math.round(this.pound/100) > 0) {
+                            if (this.pound - Math.round(this.pound/100)<1)  {
+                                this.pound -= Math.round(this.pound/100)
+                                this.poundtext('#ff0000');
+                            }else {
+                                this.pound -= 1
+                                this.poundtext('#ff0000');
+                            }
+                            
+                           
+                        }else{
+                            this.pound=0
+                            this.poundtext('#ff0000');
+
+                        }
+                    }   
+                });
+               
+            }
+
+            this.time.addEvent({
+                delay: 3000,      // 1000 ms = 1 second
+                loop: true,
+                callback: () => {
+                    if (this.totalhater < 5) {
+                        spawn();
+                        this.totalhater += 1
+                    }
+                }   
+            });
 
        
             //CPS
@@ -248,9 +336,8 @@
                 callback: () => {
                     if (this.cps>0) {
                         this.pound += this.cps;
-                        this.poundtext();
+                        this.poundtext('#00ff00');
                         this.sound.play('coin');
-                        console.log(this.pound);
                     }
                     
                 }
