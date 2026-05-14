@@ -3,19 +3,26 @@
         preload () {
             this.load.image('shirt', 'assets/shirt.png');
             this.load.image('hate', 'assets/HATE.png');
+            this.load.image('BGM1', 'assets/garage.png');
             this.load.audio("coin","assets/COIN.mp3")
             this.load.audio("broke","assets/broke.mp3")
+            this.load.audio("BOO","assets/BOO.mp3")
+            this.load.audio("DIE","assets/DIE.mp3")
+            this.load.audio("slap","assets/Slap.mp3")
+
 
 
         }
 
         create () {
+          
             //variables
             const cam = this.cameras.main;
             const clearTint = (upgrade) => upgrade.clearTint();
             this.clothprice = 100;
             this.firstbuy = true;
             this.cpc = 1;
+            this.difficulty = 1;
             this.totalhater = 0;
             const shirtcolors = [0xff0000,0x00008b,0x800080,0xffff00,0x00ff00,0xffc0cb]
             this.basecolor = 0xffffff;
@@ -34,10 +41,13 @@
                 { name: "Catch James",cost: 60,cps: 10,amount:0},
                 { name: "FACTORY",cost: 100,cps: 20,amount:0},
                 { name: "Boss Eli",cost: 10000,cps: 2000,amount:0},
+                { name: "JACK CEO",cost: 100000, cps: 500,amount:0 },
 
 
             ];
-
+            //BG
+            const background = this.add.sprite(cam.centerX,cam.centerY, 'BGM1');
+            background.setScale(5,5);
             this.pound = 0;
             const padding = 5;
             this.cps = 0;
@@ -54,29 +64,35 @@
                 this.scoreText.setColor(color); //'#00ff00'
                 this.scoreText.setText('£: ' + this.pound);
                 this.time.delayedCall(200, () => {
-                    this.scoreText.setColor('#000000');
+                    this.scoreText.setColor('#ffffff');
                 });
+                if (Math.floor(this.pound/100)===0) {
+                    this.difficulty = 0;
+                }else {
+                    this.difficulty = Math.floor(this.pound/100);
+                }
+                
             };
             //money count
             this.scoreText = this.add.text( cam.width *0.15 , 30, '£: ' + this.pound, {
                 font: '24px Arial',
-                fill: '#000000'
+                fill: '#ffffff'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0);
             this.scoreText.setFontSize(24);
             //cps text
             this.cpstext = this.add.text( cam.width * 0.15 , 130, 'CPS: ' + this.cps, {
                 font: '24px Aial',
-                fill: '#000000'
+                fill: '#ffffff'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0);
             //cpc
             this.cpctext = this.add.text( cam.width * 0.15 , 230, 'CPC: ' + this.cpc, {
                 font: '24px Aial',
-                fill: '#000000'
+                fill: '#ffffff'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0);
             //title
             this.title = this.add.text(this.cameras.main.centerX, 0, 'LAZE SIMULATOR', {
                 font: '32px Arial',
-                fill: '#000000'
+                fill: '#ffffff'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0)
             //clothes
             let bpcl = false
@@ -263,20 +279,30 @@
             const spawn = () => {
                 let spawnran = cam.centerX * Phaser.Math.FloatBetween(0, 3);
                 let sizeran = Phaser.Math.FloatBetween(0.5, 3);
+                let posranX = Phaser.Math.FloatBetween(0.55, 1.55);
+                let posranY = Phaser.Math.FloatBetween(0.4, 1.3);
+                let speedran = Phaser.Math.Between(1000, 5000);
+                let hpran = Phaser.Math.Between(0, 3) *(this.difficulty*0.7);
                 let HATE = this.add.sprite(spawnran,cam.centerY*2, 'hate').setInteractive().setDepth(99999).setScale(sizeran,sizeran);
 
                 HATE.on('pointerdown', (pointer) => {
 
                     HATE.setTint(0xff0000);
-                    this.pound += this.cpc*100;
-                    this.poundtext('#00ff00');
-                    this.sound.play('coin');
-                    this.totalhater -= 1
-                    this.time.delayedCall(125, () => {
-                        HATE.destroy();
-                        kill.remove();
-                        move.remove();
-                    }, [], this);
+                    hpran -=1 
+                    if (hpran <1 ) {
+                        this.pound += this.cpc*100;
+                        this.poundtext('#00ff00');
+                        this.sound.play('coin');
+                        this.totalhater -= 1
+                        this.time.delayedCall(125, () => {
+                            this.sound.play('DIE');
+                            HATE.destroy();
+                            kill.remove();
+                            move.remove();
+                        }, [], this);
+                    }else {
+                        this.sound.play('slap');
+                    }
                     
 
                 });
@@ -286,31 +312,24 @@
                 
                 let move = this.tweens.add({
                     targets: HATE,
-                    x: cam.centerX,            
-                    y: cam.centerY,             
-                    duration: 2000,       
+                    x: cam.centerX*posranX,            
+                    y: cam.centerY*posranY,             
+                    duration: speedran,       
                     ease: 'Power2',
                     yoyo: false,           
                     loop: 0              
                 });
                 let kill = this.time.addEvent({
-                    delay: 2000,      
+                    delay: speedran,      
                     loop: true,
                     callback: () => {
-                        if (this.pound - Math.round(this.pound/100) > 0) {
-                            if (this.pound - Math.round(this.pound/100)<1)  {
-                                this.pound -= Math.round(this.pound/100)
-                                this.poundtext('#ff0000');
-                            }else {
+                        this.sound.play('BOO');
+                        if (this.cps ===0)  {
                                 this.pound -= 1
                                 this.poundtext('#ff0000');
-                            }
-                            
-                           
-                        }else{
-                            this.pound=0
-                            this.poundtext('#ff0000');
-
+                            }else {
+                                this.pound -= this.cps*1.5
+                                this.poundtext('#ff0000');
                         }
                     }   
                 });
@@ -318,10 +337,10 @@
             }
 
             this.time.addEvent({
-                delay: 3000,      // 1000 ms = 1 second
+                delay: 7000,      // 1000 ms = 1 second
                 loop: true,
                 callback: () => {
-                    if (this.totalhater < 5) {
+                    if (this.totalhater < 9) { //the second number +1 is the total
                         spawn();
                         this.totalhater += 1
                     }
