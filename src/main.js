@@ -66,10 +66,10 @@
                 this.time.delayedCall(200, () => {
                     this.scoreText.setColor('#ffffff');
                 });
-                if (Math.floor(this.pound/100)===0) {
+                if (Math.floor(this.pound/1000)===0) {
                     this.difficulty = 0;
                 }else {
-                    this.difficulty = Math.floor(this.pound/100);
+                    this.difficulty = Math.floor(this.pound/1000);
                 }
                 
             };
@@ -282,13 +282,13 @@
                 let posranX = Phaser.Math.FloatBetween(0.55, 1.55);
                 let posranY = Phaser.Math.FloatBetween(0.4, 1.3);
                 let speedran = Phaser.Math.Between(1000, 5000);
-                let hpran = Phaser.Math.Between(0, 3) *(this.difficulty*0.7);
+                let hpran = Phaser.Math.Between(0, 3) *(this.difficulty*0.5);
                 let HATE = this.add.sprite(spawnran,cam.centerY*2, 'hate').setInteractive().setDepth(99999).setScale(sizeran,sizeran);
 
                 HATE.on('pointerdown', (pointer) => {
 
                     HATE.setTint(0xff0000);
-                    hpran -=1 
+                    hpran -= this.cpc
                     if (hpran <1 ) {
                         this.pound += this.cpc*100;
                         this.poundtext('#00ff00');
@@ -328,7 +328,7 @@
                                 this.pound -= 1
                                 this.poundtext('#ff0000');
                             }else {
-                                this.pound -= this.cps*1.5
+                                this.pound -= Phaser.round(this.cps*1.1);
                                 this.poundtext('#ff0000');
                         }
                     }   
