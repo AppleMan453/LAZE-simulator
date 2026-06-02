@@ -22,7 +22,11 @@
             this.clothprice = 100;
             this.firstbuy = true;
             this.cpc = 1;
+            this.rebirthcost = 1000,
+            this.rebirths = 0,
             this.difficulty = 1;
+            this.multiplyer = 1;
+            const updups = [];
             this.totalhater = 0;
             const shirtcolors = [0xff0000,0x00008b,0x800080,0xffff00,0x00ff00,0xffc0cb]
             this.basecolor = 0xffffff;
@@ -36,18 +40,19 @@
 
             };
             const upgrades = [
-                { name: "Flynn worker",cost: 10,cps: 2,amount:0 },
-                { name: "AI classmates",cost: 30,cps: 5,amount:0},
-                { name: "Catch James",cost: 60,cps: 10,amount:0},
-                { name: "FACTORY",cost: 100,cps: 20,amount:0},
-                { name: "Boss Eli",cost: 10000,cps: 2000,amount:0},
-                { name: "JACK CEO",cost: 100000, cps: 500,amount:0 },
+                { name: "Flynn worker",cost: 10,cps: 2,amount:0,ogp: 10 },
+                { name: "AI classmates",cost: 30,cps: 5,amount:0,ogp: 30},
+                { name: "Catch James",cost: 60,cps: 10,amount:0,ogp: 60},
+                { name: "FACTORY",cost: 100,cps: 20,amount:0,ogp: 100},
+                { name: "Company",cost: 1000,cps:100,amount:0,ogp: 1000},
+                { name: "Boss Eli",cost: 10000,cps: 2000,amount:0,ogp: 10000},
+                { name: "JACK CEO",cost: 100000, cps: 500,amount:0,ogp: 100000},
 
 
             ];
             //BG
             const background = this.add.sprite(cam.centerX,cam.centerY, 'BGM1');
-            background.setScale(5,5);
+            background.setScale(5.2,5.2);
             this.pound = 0;
             const padding = 5;
             this.cps = 0;
@@ -89,11 +94,17 @@
                 font: '24px Aial',
                 fill: '#ffffff'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0);
+            //rebirths
+            this.retxt = this.add.text( cam.width * 0.15 , 330, 'Rebirths: ' + this.rebirths, {
+                font: '24px Aial',
+                fill: '#ffffff'
+            }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0);
             //title
             this.title = this.add.text(this.cameras.main.centerX, 0, 'LAZE SIMULATOR', {
                 font: '32px Arial',
                 fill: '#ffffff'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0)
+          
             //clothes
             let bpcl = false
             const clotheup = this.add.text(cam.width * 0.2, 500,`${this.clothprice} - Buy new shirt`, {
@@ -255,9 +266,97 @@
                 
                 upbg.on('pointerout', () => {clearTint(upgradetext);bp = false});
                 upbg.on('pointerup', () => {clearTint(upgradetext);bp = false});
+                const updup = () => {
+                    upgrade.amount = 0;
+                    upgrade.cost = upgrade.ogp;
+                    upgradetext.setText(`${upgrade.amount} - ${upgrade.name} - £${upgrade.cost}`);
+                    rupbg();
+                };
+                updups.push(updup);
 
             });
-            
+            //rebirth
+            let bpr = false
+            const rebirth = this.add.text(cam.width * 0.2, 600,`${this.rebirthcost} - Move into new studio`, {
+                font: '18px Arial',
+                fill: '#ffffff'
+            }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0).setInteractive();
+            rebirth.on("pointerdown",()=>{
+                if (this.pound>this.rebirthcost-1 && bpr===false) {
+                    rebirth.setTint(0x90ee90);
+                    bpr = true
+                    this.pound -= this.clothprice; 
+                    this.poundtext('#ff0000');
+                    this.sound.play('coin');
+                    //work
+                    this.rebirthcost *= 2;
+                    this.rebirths +=1;
+                    this.multiplyer +=1;
+                    upgrades.forEach((upgrade,index) => {
+                        upgrades[index].amount = 0;
+                        updups[index]();         
+                    });
+                    
+                    //end of work
+                    rebirth.setText(`${this.rebirthcost} - Move into new studio`);
+                    this.retxt.setText('Rebirths: ' + this.rebirths);
+                    rclr();
+
+                } else {
+                    rebirth.setTint(0xff0000);
+                    this.sound.play('broke');
+                }
+            })
+                
+            rebirth.on('pointerout', () => {clearTint(rebirth);bpr = false});
+            rebirth.on('pointerup', () => {clearTint(rebirth);bpr = false});
+            let boundupr = rebirth.getBounds();
+            const rbg = this.add.graphics();
+            rbg.fillStyle(0x000000, 1);
+            rbg.setInteractive();
+
+            const rclr = () => {
+                boundupr = rebirth.getBounds();
+                rbg.fillRect(
+                boundupr.x -padding,
+                boundupr.y -padding,
+                boundupr.width + padding * 2,
+                boundupr.height + padding * 2
+            )}
+            rclr();
+                
+              
+
+            rbg.on("pointerdown",()=>{
+                 if (this.pound>this.rebirthcost-1 && bpr===false) {
+                    rebirth.setTint(0x90ee90);
+                    bpr = true
+                    this.pound -= this.clothprice; 
+                    this.poundtext('#ff0000');
+                    this.sound.play('coin');
+                    //work
+                    this.rebirthcost *= 2;
+                    this.rebirths +=1;
+                    this.multiplyer +=1;
+                    upgrades.forEach((upgrade,index) => {
+                        this.cps = 0;
+                        updups[index]();
+                    });
+                    
+                    //end of work
+                    rebirth.setText(`${this.rebirthcost} - Move into new studio`);  
+                    this.retxt.setText('Rebirths: ' + this.rebirths);
+                    rclr();
+
+                } else {
+                    rebirth.setTint(0xff0000);
+                    this.sound.play('broke');
+                }
+            })
+                
+            rbg.on('pointerout', () => {clearTint(rebirth);brl = false});
+            rbg.on('pointerup', () => {clearTint(rebirth);bpr = false});
+
             //Shirt
             const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive().setScale(3,3).setDepth(0)
 
@@ -265,7 +364,7 @@
             {
 
                 shirt.setTint(0x0000ff);
-                this.pound += this.cpc;
+                this.pound += this.cpc * this.multiplyer;
                 this.poundtext('#00ff00');
                 this.sound.play('coin');
                 
@@ -290,7 +389,7 @@
                     HATE.setTint(0xff0000);
                     hpran -= this.cpc
                     if (hpran <1 ) {
-                        this.pound += this.cpc*100;
+                        this.pound += this.cpc*100*this.multiplyer;
                         this.poundtext('#00ff00');
                         this.sound.play('coin');
                         this.totalhater -= 1
@@ -328,7 +427,7 @@
                                 this.pound -= 1
                                 this.poundtext('#ff0000');
                             }else {
-                                this.pound -= Phaser.round(this.cps*1.1);
+                                this.pound -= Math.round(this.cps*1.1);
                                 this.poundtext('#ff0000');
                         }
                     }   
@@ -354,7 +453,7 @@
                 loop: true,
                 callback: () => {
                     if (this.cps>0) {
-                        this.pound += this.cps;
+                        this.pound += this.cps*this.multiplyer;
                         this.poundtext('#00ff00');
                         this.sound.play('coin');
                     }
