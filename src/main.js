@@ -2,13 +2,14 @@
 
         preload () {
             this.load.image('shirt', 'assets/shirt.png');
-            this.load.image('hate', 'assets/HATE.png');
+            this.load.image('hate', 'assets/enemy.png');
             this.load.image('BGM1', 'assets/garage.png');
-            this.load.audio("coin","assets/COIN.mp3")
-            this.load.audio("broke","assets/broke.mp3")
-            this.load.audio("BOO","assets/BOO.mp3")
-            this.load.audio("DIE","assets/DIE.mp3")
-            this.load.audio("slap","assets/Slap.mp3")
+            this.load.image('fan', 'assets/FAN.png');
+            this.load.audio("coin","assets/COIN.mp3");
+            this.load.audio("broke","assets/broke.mp3");
+            this.load.audio("BOO","assets/BOO.mp3");
+            this.load.audio("DIE","assets/DIE.mp3");
+            this.load.audio("slap","assets/Slap.mp3");
 
 
 
@@ -22,11 +23,16 @@
             this.clothprice = 100;
             this.firstbuy = true;
             this.cpc = 1;
-            this.rebirthcost = 1000,
-            this.rebirths = 0,
+            this.rebirthcost = 1000;
+            this.fanprice = 500;
+            this.rebirths = 0;
+            this.fantotal = 0;
             this.difficulty = 1;
             this.multiplyer = 1;
+            this.totalhaterlt = 0;
+            const enemylist = [];
             const updups = [];
+            const dienmy = []; 
             this.totalhater = 0;
             const shirtcolors = [0xff0000,0x00008b,0x800080,0xffff00,0x00ff00,0xffc0cb]
             this.basecolor = 0xffffff;
@@ -78,6 +84,75 @@
                 }
                 
             };
+            //spawn fan
+
+            const spawnfan = () => {
+                let fan = this.add.image(cam.centerX,cam.centerY, 'fan'
+                ).setDepth(999999).setScale(2/40,2/40);
+                let target = false;
+                fan.preFX.addPixelate(3);
+                this.fantotal += 1;
+                let postar = Phaser.Utils.Array.GetRandom(enemylist);
+                let myIndex = enemylist.indexOf(postar);
+                this.time.addEvent({
+                    delay: 1000,      
+                    loop: true,
+                    callback: () => {
+                        if (target===false && enemylist.length > 0) {
+                            postar = Phaser.Utils.Array.GetRandom(enemylist);
+                            myIndex = enemylist.indexOf(postar);
+                            let targetmove = this.tweens.add({
+                                targets: fan,
+                                x: postar.xenemy,            
+                                y: postar.yenemy,             
+                                duration: 500,       
+                                ease: 'Power2',
+                                yoyo: false,           
+                                loop: 0              
+                            });
+                            target = true;
+                            
+                            
+                        }
+                        
+                    }
+                });
+                this.time.addEvent({
+                    delay: 500,      
+                    loop: true,
+                    callback: () => {
+                        if (target===true && enemylist.length > 0&& enemylist.includes(postar))  {
+                             this.time.addEvent({
+                                delay: postar.wait-1000,      
+                                loop: false,
+                                callback: () => {
+                                    if (target===true && enemylist.length > 0&& enemylist.includes(postar))  {
+                                
+                                        postar.damage();
+                                    }     
+                                }   
+                            });
+
+                        }
+                            
+                    }   
+                });
+                const enemydie = (id) => {
+                    
+                    console.log(id)
+                    console.log(myIndex)
+
+                    if (id===myIndex) {
+                        console.log("target false");
+                        target = false;
+                        postar = Phaser.Utils.Array.GetRandom(enemylist);
+                        myIndex = enemylist.indexOf(postar);
+                    }
+                }
+                dienmy.push(enemydie);
+
+
+            }
             //money count
             this.scoreText = this.add.text( cam.width *0.15 , 30, '£: ' + this.pound, {
                 font: '24px Arial',
@@ -85,17 +160,22 @@
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0);
             this.scoreText.setFontSize(24);
             //cps text
-            this.cpstext = this.add.text( cam.width * 0.15 , 130, 'CPS: ' + this.cps, {
+            this.cpstext = this.add.text( cam.width * 0.15 , 80, 'CPS: ' + this.cps, {
+                font: '24px Aial',
+                fill: '#ffffff'
+            }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0);
+            //fanstotal
+            this.ftxt = this.add.text( cam.width * 0.15 , 230, 'Fans: ' + this.fantotal, {
                 font: '24px Aial',
                 fill: '#ffffff'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0);
             //cpc
-            this.cpctext = this.add.text( cam.width * 0.15 , 230, 'CPC: ' + this.cpc, {
+            this.cpctext = this.add.text( cam.width * 0.15 , 130, 'CPC: ' + this.cpc, {
                 font: '24px Aial',
                 fill: '#ffffff'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0);
             //rebirths
-            this.retxt = this.add.text( cam.width * 0.15 , 330, 'Rebirths: ' + this.rebirths, {
+            this.retxt = this.add.text( cam.width * 0.15 , 180, 'Rebirths: ' + this.rebirths, {
                 font: '24px Aial',
                 fill: '#ffffff'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0);
@@ -107,7 +187,7 @@
           
             //clothes
             let bpcl = false
-            const clotheup = this.add.text(cam.width * 0.2, 500,`${this.clothprice} - Buy new shirt`, {
+            const clotheup = this.add.text(cam.width * 0.2, 430,`${this.clothprice} - Buy new shirt`, {
                 font: '20px Arial',
                 fill: '#ffffff'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0).setInteractive();
@@ -122,7 +202,7 @@
                     this.clothprice *=  2;
                     if (this.firstbuy === true) {
                         if (this.cpc === 1){
-                            shirt.preFX.addColorMatrix().brightness(10);
+                            shirt.preFX.addColorMatrix();
                         }
                         this.cpc += 1
                         if (this.cpc === 3){
@@ -193,6 +273,77 @@
             clbg.on('pointerout', () => {clearTint(clotheup);bpcl = false});
             clbg.on('pointerup', () => {clearTint(clotheup);bpcl = false});
 
+            //FANS buy
+            let bgf = false
+            const fansp = this.add.text(cam.width * 0.2, 630,`${this.fanprice} - Hire fans`, {
+                font: '18px Arial',
+                fill: '#ffffff'
+            }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0).setInteractive();
+            fansp.on("pointerdown",()=>{
+                if (this.pound>this.fanprice-1 && bpr===false) {
+                    fansp.setTint(0x90ee90);
+                    bpr = true
+                    this.pound -= this.fanprice; 
+                    this.poundtext('#ff0000');
+                    this.sound.play('coin');
+                    //work
+                    this.fanprice *= 2;
+                    this.fantotal +=1;
+                    spawnfan();      
+                    //end of work
+                    fansp.setText(`${this.fanprice} - Hire fans`);
+                    this.ftxt.setText('Fans: ' + this.fantotal);
+                    fclr();
+
+                } else {
+                    fansp.setTint(0xff0000);
+                    this.sound.play('broke');
+                }
+            })
+                
+            fansp.on('pointerout', () => {clearTint(fansp);bpr = false});
+            fansp.on('pointerup', () => {clearTint(fansp);bpr = false});
+            let boundupf = fansp.getBounds();
+            const fbg = this.add.graphics();
+            fbg.fillStyle(0x000000, 1);
+            fbg.setInteractive();
+
+            const fclr = () => {
+                boundupf = fansp.getBounds();
+                fbg.fillRect(
+                boundupf.x -padding,
+                boundupf.y -padding,
+                boundupf.width + padding * 2,
+                boundupf.height + padding * 2
+            )}
+            fclr();
+                
+              
+
+            fbg.on("pointerdown",()=>{
+                 if (this.pound>this.fanprice-1 && bpr===false) {
+                    fansp.setTint(0x90ee90);
+                    bpr = true
+                    this.pound -= this.fanprice; 
+                    this.poundtext('#ff0000');
+                    this.sound.play('coin');
+                    //work
+                    this.fanprice *= 2;
+                    this.fantotal +=1;
+                    spawnfan();      
+                    //end of work
+                    fansp.setText(`${this.fanprice} - Hire fans`);
+                    this.ftxt.setText('Fans: ' + this.fantotal);
+                    fclr();
+
+                } else {
+                    fansp.setTint(0xff0000);
+                    this.sound.play('broke');
+                }
+            })
+                
+            fbg.on('pointerout', () => {clearTint(fansp);brl = false});
+            fbg.on('pointerup', () => {clearTint(fansp);bpr = false});
             //upgrades
             upgrades.forEach((upgrade,index) => {
                 //getting the y position
@@ -275,9 +426,11 @@
                 updups.push(updup);
 
             });
+            //Fans
+
             //rebirth
             let bpr = false
-            const rebirth = this.add.text(cam.width * 0.2, 600,`${this.rebirthcost} - Move into new studio`, {
+            const rebirth = this.add.text(cam.width * 0.2, 530,`${this.rebirthcost} - Move into new studio`, {
                 font: '18px Arial',
                 fill: '#ffffff'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0).setInteractive();
@@ -292,6 +445,8 @@
                     this.rebirthcost *= 2;
                     this.rebirths +=1;
                     this.multiplyer +=1;
+                    this.pound = 0;
+
                     upgrades.forEach((upgrade,index) => {
                         upgrades[index].amount = 0;
                         updups[index]();         
@@ -338,6 +493,7 @@
                     this.rebirthcost *= 2;
                     this.rebirths +=1;
                     this.multiplyer +=1;
+                    this.pound = 0;
                     upgrades.forEach((upgrade,index) => {
                         this.cps = 0;
                         updups[index]();
@@ -358,8 +514,9 @@
             rbg.on('pointerup', () => {clearTint(rebirth);bpr = false});
 
             //Shirt
-            const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt').setInteractive().setScale(3,3).setDepth(0)
-
+            const shirt = this.add.sprite(cam.centerX,cam.centerY, 'shirt'
+            ).setInteractive().setScale(0.13,0.13).setDepth(0);
+            shirt.preFX.addPixelate(3);
             shirt.on('pointerdown', (pointer) =>
             {
 
@@ -381,8 +538,45 @@
                 let posranX = Phaser.Math.FloatBetween(0.55, 1.55);
                 let posranY = Phaser.Math.FloatBetween(0.4, 1.3);
                 let speedran = Phaser.Math.Between(1000, 5000);
+                let dead = false;
                 let hpran = Phaser.Math.Between(0, 3) *(this.difficulty*0.5);
-                let HATE = this.add.sprite(spawnran,cam.centerY*2, 'hate').setInteractive().setDepth(99999).setScale(sizeran,sizeran);
+                let HATE = this.add.sprite(spawnran,cam.centerY*2, 'hate'
+                ).setInteractive().setDepth(99999).setScale(sizeran/40,sizeran/40)
+                 const damageenemy = () => {
+                    hpran -= 2;
+                    if (hpran <1 ) {
+                        if (dead===true) {return};
+                        dead = true;
+                        this.pound += this.cpc*100*this.multiplyer;
+                        this.poundtext('#00ff00');
+                        this.sound.play('coin');
+                        this.totalhater -= 1
+                        this.time.delayedCall(125, () => {
+                             dienmy.forEach((die,index) => {
+                                dienmy[index](myIndex);         
+                            });
+                            this.sound.play('DIE');
+                            enemylist.splice(myIndex, 1);
+                            HATE.destroy();
+                            kill.remove();
+                            move.remove();
+                        }, [], this);
+                    }else {
+                        this.sound.play('slap');
+                    }
+                };
+                const enemyEntry = {
+                    xenemy: cam.centerX*posranX,
+                    yenemy: cam.centerY*posranY,
+                    damage: damageenemy,
+                    wait: speedran
+                };
+               
+                enemylist.push(enemyEntry);
+                let myIndex = enemylist.indexOf(enemyEntry);
+
+
+                HATE.preFX.addPixelate(3);
 
                 HATE.on('pointerdown', (pointer) => {
 
@@ -394,7 +588,11 @@
                         this.sound.play('coin');
                         this.totalhater -= 1
                         this.time.delayedCall(125, () => {
+                             dienmy.forEach((die,index) => {
+                                dienmy[index](myIndex);         
+                            });
                             this.sound.play('DIE');
+                            enemylist.splice(myIndex, 1);
                             HATE.destroy();
                             kill.remove();
                             move.remove();
@@ -408,6 +606,7 @@
 
                 HATE.on('pointerout', () => {HATE.clearTint()});
                 HATE.on('pointerup', () => {HATE.clearTint()});
+               
                 
                 let move = this.tweens.add({
                     targets: HATE,
@@ -440,6 +639,7 @@
                 loop: true,
                 callback: () => {
                     if (this.totalhater < 9) { //the second number +1 is the total
+                        this.totalhaterlt += 1;
                         spawn();
                         this.totalhater += 1
                     }
