@@ -1,7 +1,7 @@
     class Example extends Phaser.Scene {
 
         preload () {
-            this.load.image('shirt', 'assets/shirt.png');
+            this.load.image('shirt', 'assets/SHIRT-asuif.png');
             this.load.image('hate', 'assets/enemy.png');
             this.load.image('BGM1', 'assets/garage.png');
             this.load.image('fan', 'assets/FAN.png');
