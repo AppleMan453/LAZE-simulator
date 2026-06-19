@@ -580,7 +580,7 @@
 
                 HATE.on('pointerdown', (pointer) => {
 
-                    HATE.setTint(0xff0000);
+                    HATE.setTint(0xffffff);
                     hpran -= this.cpc
                     if (hpran <1 ) {
                         this.pound += this.cpc*100*this.multiplyer;
