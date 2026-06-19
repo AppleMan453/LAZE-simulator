@@ -534,12 +534,12 @@
 
             const spawn = () => {
                 let spawnran = cam.centerX * Phaser.Math.FloatBetween(0, 3);
-                let sizeran = Phaser.Math.FloatBetween(0.5, 3);
+                let sizeran = Phaser.Math.FloatBetween(0.9,3);
                 let posranX = Phaser.Math.FloatBetween(0.55, 1.55);
                 let posranY = Phaser.Math.FloatBetween(0.4, 1.3);
                 let speedran = Phaser.Math.Between(1000, 5000);
                 let dead = false;
-                let hpran = Phaser.Math.Between(0, 3) *(this.difficulty*0.5);
+                let hpran = Phaser.Math.Between(0, 3) *(this.difficulty*0.2);
                 let HATE = this.add.sprite(spawnran,cam.centerY*2, 'hate'
                 ).setInteractive().setDepth(99999).setScale(sizeran/40,sizeran/40)
                  const damageenemy = () => {
