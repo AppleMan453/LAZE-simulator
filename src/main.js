@@ -44,13 +44,14 @@
 
             };
             const upgrades = [
-                { name: "Flynn worker",cost: 10,cps: 2,amount:0,ogp: 10 },
+                { name: "Jack worker",cost: 10,cps: 2,amount:0,ogp: 10 },
                 { name: "AI classmates",cost: 50,cps: 10,amount:0,ogp: 50},
                 { name: "Catch James",cost: 120,cps: 25,amount:0,ogp: 120},
-                { name: "FACTORY",cost: 500,cps: 50,amount:0,ogp: 500},
+                { name: "Factory",cost: 500,cps: 50,amount:0,ogp: 500},
                 { name: "Company",cost: 1000,cps:100,amount:0,ogp: 1000},
-                { name: "Boss Eli",cost: 10000,cps: 2000,amount:0,ogp: 10000},
-                { name: "JACK CEO",cost: 100000, cps: 5000,amount:0,ogp: 100000},
+                { name: "Designer Flynn",cost: 10000,cps: 2000,amount:0,ogp: 10000},
+                { name: "Eli CEO",cost: 100000, cps: 5000,amount:0,ogp: 100000},
+                { name: "AI CFO",cost: 100000, cps:10000,amount:0,opg:100000},
 
 
             ];
@@ -102,12 +103,10 @@
                             myIndex = enemylist.indexOf(postar);
                             let targetmove = this.tweens.add({
                                 targets: fan,
-                                x: postar.xenemy-Phaser.Math.FloatBetween(-1,1),          
-                                y: postar.yenemy-Phaser.Math.FloatBetween(-1,1),             
+                                x: postar.xenemy+ Phaser.Math.Between(-100, 100),        
+                                y: postar.yenemy+ Phaser.Math.Between(-100, 100),             
                                 duration: 1000,       
-                                ease: 'Power2',
-                                yoyo: false,           
-                                loop: 0              
+                                ease: 'Power2'
                             });
                             target = true;
                             this.time.addEvent({
