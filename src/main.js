@@ -39,20 +39,18 @@
             const shirtcolor = () => {
                 this.color = Phaser.Utils.Array.GetRandom(shirtcolors);
 
-                console.log(this.color)
                 shirt.setTint(this.color);
-                console.log(shirt.tint)
                 this.basecolor = this.color;
 
             };
             const upgrades = [
                 { name: "Flynn worker",cost: 10,cps: 2,amount:0,ogp: 10 },
-                { name: "AI classmates",cost: 30,cps: 5,amount:0,ogp: 30},
-                { name: "Catch James",cost: 60,cps: 10,amount:0,ogp: 60},
-                { name: "FACTORY",cost: 100,cps: 20,amount:0,ogp: 100},
+                { name: "AI classmates",cost: 50,cps: 10,amount:0,ogp: 50},
+                { name: "Catch James",cost: 120,cps: 25,amount:0,ogp: 120},
+                { name: "FACTORY",cost: 500,cps: 50,amount:0,ogp: 500},
                 { name: "Company",cost: 1000,cps:100,amount:0,ogp: 1000},
                 { name: "Boss Eli",cost: 10000,cps: 2000,amount:0,ogp: 10000},
-                { name: "JACK CEO",cost: 100000, cps: 500,amount:0,ogp: 100000},
+                { name: "JACK CEO",cost: 100000, cps: 5000,amount:0,ogp: 100000},
 
 
             ];
@@ -90,6 +88,7 @@
                 let fan = this.add.image(cam.centerX,cam.centerY, 'fan'
                 ).setDepth(999999).setScale(2/40,2/40);
                 let target = false;
+                let there = false;
                 fan.preFX.addPixelate(3);
                 this.fantotal += 1;
                 let postar = Phaser.Utils.Array.GetRandom(enemylist);
@@ -103,18 +102,21 @@
                             myIndex = enemylist.indexOf(postar);
                             let targetmove = this.tweens.add({
                                 targets: fan,
-                                x: postar.xenemy,            
-                                y: postar.yenemy,             
-                                duration: 500,       
+                                x: postar.xenemy-Phaser.Math.FloatBetween(-1,1),          
+                                y: postar.yenemy-Phaser.Math.FloatBetween(-1,1),             
+                                duration: 1000,       
                                 ease: 'Power2',
                                 yoyo: false,           
                                 loop: 0              
                             });
                             target = true;
-                            
-                            
+                            this.time.addEvent({
+                                delay: 500,      
+                                callback: () => {
+                                   there = true;
+                                }   
+                            });
                         }
-                        
                     }
                 });
                 this.time.addEvent({
@@ -126,8 +128,7 @@
                                 delay: postar.wait-1000,      
                                 loop: false,
                                 callback: () => {
-                                    if (target===true && enemylist.length > 0&& enemylist.includes(postar))  {
-                                
+                                    if (target===true && enemylist.length > 0&& enemylist.includes(postar)&&there===true)  {
                                         postar.damage();
                                     }     
                                 }   
@@ -143,6 +144,7 @@
                     console.log(myIndex)
 
                     if (id===myIndex) {
+                        there = false;
                         console.log("target false");
                         target = false;
                         postar = Phaser.Utils.Array.GetRandom(enemylist);
@@ -200,17 +202,7 @@
                     this.sound.play('coin');
                     shirtcolor();
                     this.clothprice *=  2;
-                    if (this.firstbuy === true) {
-                        if (this.cpc === 1){
-                            shirt.preFX.addColorMatrix();
-                        }
-                        this.cpc += 1
-                        if (this.cpc === 3){
-                            this.firstbuy = false;
-                        }
-                    } else {
-                        this.cpc =  Math.round(1.2*this.cpc);
-                    }
+                    this.cpc *= 2
                     clotheup.setText(`${this.clothprice} - Buy new shirt`);
                     this.cpctext.setText('CPC: ' + this.cpc);
                     rclbg();
@@ -249,17 +241,7 @@
                     this.sound.play('coin');
                     shirtcolor();
                     this.clothprice *=  2;
-                    if (this.firstbuy === true) {
-                        if (this.cpc === 1){
-                            shirt.preFX.addColorMatrix().brightness(10);
-                        }
-                        this.cpc += 1
-                        if (this.cpc === 3){
-                            this.firstbuy = false;
-                        }
-                    } else {
-                        this.cpc =  Math.round(1.2*this.cpc);
-                    }
+                    this.cpc *= 2
                     clotheup.setText(`${this.clothprice} - Buy new shirt`);
                     this.cpctext.setText('CPC: ' + this.cpc);
                     rclbg();
@@ -287,7 +269,7 @@
                     this.poundtext('#ff0000');
                     this.sound.play('coin');
                     //work
-                    this.fanprice *= 2;
+                    this.fanprice *= 4;
                     this.fantotal +=1;
                     spawnfan();      
                     //end of work
@@ -328,7 +310,7 @@
                     this.poundtext('#ff0000');
                     this.sound.play('coin');
                     //work
-                    this.fanprice *= 2;
+                    this.fanprice *= 4;
                     this.fantotal +=1;
                     spawnfan();      
                     //end of work
@@ -519,17 +501,40 @@
             shirt.preFX.addPixelate(3);
             shirt.on('pointerdown', (pointer) =>
             {
-
                 shirt.setTint(0x0000ff);
+                this.tweens.add({
+                    targets: shirt,
+                    scale: 0.13,
+                    duration: 60,
+                    ease: 'Back.Out',
+                    yoyo: true
+                });
                 this.pound += this.cpc * this.multiplyer;
                 this.poundtext('#00ff00');
                 this.sound.play('coin');
                 
 
             });
-
-            shirt.on('pointerout', () => {shirt.setTint(this.basecolor)});
-            shirt.on('pointerup', () => {shirt.setTint(this.basecolor)});
+            shirt.on('pointerover', () => {
+                this.tweens.add({
+                    targets: shirt,
+                    scale: 0.14,
+                    duration: 60,
+                    ease: 'Power2',
+                });
+            });
+            shirt.on('pointerout', () => {
+                shirt.setTint(this.basecolor);
+                this.tweens.add({
+                    targets: shirt,
+                    scale: 0.13,
+                    duration: 60,
+                    ease: 'Power2',
+                });
+            });
+            shirt.on('pointerup', () => {
+                shirt.setTint(this.basecolor);
+            });            
             //HATERS
 
             const spawn = () => {
@@ -542,8 +547,9 @@
                 let hpran = Phaser.Math.Between(0, 3) *(this.difficulty*0.2);
                 let HATE = this.add.sprite(spawnran,cam.centerY*2, 'hate'
                 ).setInteractive().setDepth(99999).setScale(sizeran/40,sizeran/40)
-                 const damageenemy = () => {
-                    hpran -= 2;
+                const damageenemy = () => {
+                    hpran -= this.cpc;
+                    HATE.setTint(0x0000ff);
                     if (hpran <1 ) {
                         if (dead===true) {return};
                         dead = true;
@@ -561,8 +567,6 @@
                             kill.remove();
                             move.remove();
                         }, [], this);
-                    }else {
-                        this.sound.play('slap');
                     }
                 };
                 const enemyEntry = {
@@ -580,7 +584,7 @@
 
                 HATE.on('pointerdown', (pointer) => {
 
-                    HATE.setTint(0xffffff);
+                    HATE.setTint(0x0000ff);
                     hpran -= this.cpc
                     if (hpran <1 ) {
                         this.pound += this.cpc*100*this.multiplyer;
@@ -635,10 +639,10 @@
             }
 
             this.time.addEvent({
-                delay: 7000,      // 1000 ms = 1 second
+                delay: 5000,      // 1000 ms = 1 second
                 loop: true,
                 callback: () => {
-                    if (this.totalhater < 9) { //the second number +1 is the total
+                    if (this.totalhater < 11) { //the second number +1 is the total
                         this.totalhaterlt += 1;
                         spawn();
                         this.totalhater += 1
