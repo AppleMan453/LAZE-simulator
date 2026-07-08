@@ -2,14 +2,17 @@
 
         preload () {
             this.load.image('shirt', 'assets/SHIRT-ASUIF.png');
+            this.load.image("BGM2","assets/app.png")
             this.load.image('hate', 'assets/enemy.png');
             this.load.image('BGM1', 'assets/garage.png');
             this.load.image('fan', 'assets/FAN.png');
+            this.load.image('BGM3', 'assets/man.png');
             this.load.audio("coin","assets/COIN.mp3");
             this.load.audio("broke","assets/broke.mp3");
             this.load.audio("BOO","assets/BOO.mp3");
             this.load.audio("DIE","assets/DIE.mp3");
             this.load.audio("slap","assets/Slap.mp3");
+
 
 
 
@@ -19,7 +22,6 @@
           
             //variables
             const cam = this.cameras.main;
-            const clearTint = (upgrade) => upgrade.clearTint();
             this.clothprice = 100;
             this.firstbuy = true;
             this.cpc = 1;
@@ -30,12 +32,29 @@
             this.difficulty = 1;
             this.multiplyer = 1;
             this.totalhaterlt = 0;
+            this.totalhater = 0;
+            this.basecolor = 0xffffff;
+            const padding = 5;
+            this.pound = 0;
+            this.cps = 0;
+            //lists
             const enemylist = [];
             const updups = [];
             const dienmy = []; 
-            this.totalhater = 0;
             const shirtcolors = [0xff0000,0x00008b,0x800080,0xffff00,0x00ff00,0xffc0cb]
-            this.basecolor = 0xffffff;
+            const upgrades = [
+                { name: "Jack worker",cost: 10,cps: 2,amount:0,ogp: 10 },
+                { name: "AI classmates",cost: 50,cps: 10,amount:0,ogp: 50},
+                { name: "Catch James",cost: 120,cps: 25,amount:0,ogp: 120},
+                { name: "Factory",cost: 500,cps: 50,amount:0,ogp: 500},
+                { name: "Company",cost: 1000,cps:100,amount:0,ogp: 1000},
+                { name: "Flynn Boss",cost: 10000,cps: 2000,amount:0,ogp: 10000},
+                { name: "AI CFO",cost: 100000, cps: 5000,amount:0,ogp: 100000},
+                { name: "ELI CEO",cost: 100000, cps:10000,amount:0,ogp:100000},
+
+
+            ];
+            //shirt color func
             const shirtcolor = () => {
                 this.color = Phaser.Utils.Array.GetRandom(shirtcolors);
 
@@ -43,24 +62,14 @@
                 this.basecolor = this.color;
 
             };
-            const upgrades = [
-                { name: "Jack worker",cost: 10,cps: 2,amount:0,ogp: 10 },
-                { name: "AI classmates",cost: 50,cps: 10,amount:0,ogp: 50},
-                { name: "Catch James",cost: 120,cps: 25,amount:0,ogp: 120},
-                { name: "Factory",cost: 500,cps: 50,amount:0,ogp: 500},
-                { name: "Company",cost: 1000,cps:100,amount:0,ogp: 1000},
-                { name: "Designer Flynn",cost: 10000,cps: 2000,amount:0,ogp: 10000},
-                { name: "Eli CEO",cost: 100000, cps: 5000,amount:0,ogp: 100000},
-                { name: "AI CFO",cost: 100000, cps:10000,amount:0,opg:100000},
-
-
-            ];
+            //clear tint func
+            const clearTint = (upgrade) => upgrade.clearTint();
             //BG
-            const background = this.add.sprite(cam.centerX,cam.centerY, 'BGM1');
-            background.setScale(5.2,5.2);
-            this.pound = 0;
-            const padding = 5;
-            this.cps = 0;
+            const background2 = this.add.sprite(cam.centerX,cam.centerY, 'BGM2');
+            background2.alpha = 0;
+            const background1 = this.add.sprite(cam.centerX,cam.centerY, 'BGM1');
+            background1.setScale(5.2,5.2).setDepth(-9999); 
+            
             //orientation
             this.scale.on('orientationchange', (orientation) => {
                 if (orientation === Phaser.Scale.LANDSCAPE) {
@@ -73,6 +82,9 @@
             this.poundtext = (color) => {
                 this.scoreText.setColor(color); //'#00ff00'
                 this.scoreText.setText('£: ' + this.pound);
+                if (this.pound==42&&this.cps==0&&this.cpc==1) {
+                    this.multiplyer = 99999
+                };
                 this.time.delayedCall(200, () => {
                     this.scoreText.setColor('#ffffff');
                 });
@@ -81,6 +93,10 @@
                 }else {
                     this.difficulty = Math.floor(this.pound/1000);
                 }
+                if (this.rebirths < 5) {
+                    let sixseven = 9
+                };
+              
                 
             };
             //spawn fan
@@ -137,19 +153,14 @@
                             
                     }   
                 });
-                const enemydie = (id) => {
-                    
-                    console.log(id)
-                    console.log(myIndex)
-
-                    if (id===myIndex) {
-                        there = false;
-                        console.log("target false");
+                const enemydie = (enemy) => {
+                    if (enemy === postar) {
                         target = false;
+                        there = false;
                         postar = Phaser.Utils.Array.GetRandom(enemylist);
-                        myIndex = enemylist.indexOf(postar);
                     }
-                }
+                };
+
                 dienmy.push(enemydie);
 
 
@@ -432,7 +443,16 @@
                         upgrades[index].amount = 0;
                         updups[index]();         
                     });
-                    
+                    if (this.rebirths == 5) {
+                        background1.destroy();
+                        background2.setScale(0.5,0.5).setDepth(-9999).setTint(0x7F7F7F).preFX.addPixelate(5);
+                        background2.alpha = 1;
+                    }
+                    if (this.rebirths ==10) {
+                        background2.destroy();
+                        const background3 = this.add.sprite(cam.centerX,cam.centerY, 'BGM3');
+                        background3.setScale(5.2,5.2).setDepth(-9999);
+                    }
                     //end of work
                     rebirth.setText(`${this.rebirthcost} - Move into new studio`);
                     this.retxt.setText('Rebirths: ' + this.rebirths);
@@ -546,9 +566,16 @@
                 let hpran = Phaser.Math.Between(0, 3) *(this.difficulty*0.2);
                 let HATE = this.add.sprite(spawnran,cam.centerY*2, 'hate'
                 ).setInteractive().setDepth(99999).setScale(sizeran/40,sizeran/40)
+
                 const damageenemy = () => {
                     hpran -= this.cpc;
-                    HATE.setTint(0x0000ff);
+                    if (!(HATE.tint==(0x000ff))) {
+                        console.log("Change color")
+                        HATE.setTint(0x0000ff);
+                        this.time.delayedCall(10,()=> {
+                            HATE.clearTint();
+                        })
+                    };
                     if (hpran <1 ) {
                         if (dead===true) {return};
                         dead = true;
@@ -557,11 +584,13 @@
                         this.sound.play('coin');
                         this.totalhater -= 1
                         this.time.delayedCall(125, () => {
-                             dienmy.forEach((die,index) => {
-                                dienmy[index](myIndex);         
-                            });
+                            dienmy.forEach(fn => fn(enemyEntry));
+                        
                             this.sound.play('DIE');
-                            enemylist.splice(myIndex, 1);
+                            const index = enemylist.indexOf(enemyEntry);
+                            if (index !== -1) {
+                                enemylist.splice(index, 1);
+                            }
                             HATE.destroy();
                             kill.remove();
                             move.remove();
@@ -576,7 +605,6 @@
                 };
                
                 enemylist.push(enemyEntry);
-                let myIndex = enemylist.indexOf(enemyEntry);
 
 
                 HATE.preFX.addPixelate(3);
@@ -591,11 +619,12 @@
                         this.sound.play('coin');
                         this.totalhater -= 1
                         this.time.delayedCall(125, () => {
-                             dienmy.forEach((die,index) => {
-                                dienmy[index](myIndex);         
-                            });
+                            dienmy.forEach(fn => fn(enemyEntry));
                             this.sound.play('DIE');
-                            enemylist.splice(myIndex, 1);
+                            const index = enemylist.indexOf(enemyEntry);
+                            if (index !== -1) {
+                                enemylist.splice(index, 1);
+                            }
                             HATE.destroy();
                             kill.remove();
                             move.remove();
@@ -655,6 +684,7 @@
                 delay: 1000,      // 1000 ms = 1 second
                 loop: true,
                 callback: () => {
+                    console.log(enemylist)
                     if (this.cps>0) {
                         this.pound += this.cps*this.multiplyer;
                         this.poundtext('#00ff00');
