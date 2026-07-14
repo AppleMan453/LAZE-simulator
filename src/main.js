@@ -7,11 +7,14 @@
             this.load.image('BGM1', 'assets/garage.png');
             this.load.image('fan', 'assets/FAN.png');
             this.load.image('BGM3', 'assets/man.png');
+            this.load.image('explosion', 'assets/boom.png')
             this.load.audio("coin","assets/COIN.mp3");
             this.load.audio("broke","assets/broke.mp3");
             this.load.audio("BOO","assets/BOO.mp3");
             this.load.audio("DIE","assets/DIE.mp3");
             this.load.audio("slap","assets/Slap.mp3");
+            this.load.audio("boom","assets/explosion.mp3");
+
 
 
 
@@ -25,13 +28,16 @@
             this.clothprice = 100;
             this.firstbuy = true;
             this.cpc = 1;
+            this.candam = 10;
             this.rebirthcost = 1000;
             this.fanprice = 500;
+            this.cannon = false;
             this.rebirths = 0;
             this.fantotal = 0;
             this.difficulty = 1;
-            this.multiplyer = 1;
+            this.multiplyer = 50;
             this.totalhaterlt = 0;
+            this.cannoprice = 500;
             this.totalhater = 0;
             this.basecolor = 0xffffff;
             const padding = 5;
@@ -144,7 +150,7 @@
                                 loop: false,
                                 callback: () => {
                                     if (target===true && enemylist.length > 0&& enemylist.includes(postar)&&there===true)  {
-                                        postar.damage();
+                                        postar.damage(this.cpc);
                                     }     
                                 }   
                             });
@@ -199,7 +205,7 @@
           
             //clothes
             let bpcl = false
-            const clotheup = this.add.text(cam.width * 0.2, 430,`${this.clothprice} - Buy new shirt`, {
+            const clotheup = this.add.text(cam.width * 0.2, 530,`${this.clothprice} - Buy new shirt`, {
                 font: '20px Arial',
                 fill: '#ffffff'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0).setInteractive();
@@ -264,11 +270,102 @@
                 
             clbg.on('pointerout', () => {clearTint(clotheup);bpcl = false});
             clbg.on('pointerup', () => {clearTint(clotheup);bpcl = false});
+            //Cannon buy
+            let cb = false
+            const cannonbuy = this.add.text(cam.width * 0.2, 630,`${this.cannoprice} - Buy a cannon`, {
+                font: '20px Arial',
+                fill: '#ffffff'
+            }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0).setInteractive();
+            cannonbuy.on("pointerdown",()=>{
+                if (this.pound>this.cannoprice-1 && cb===false) {
+                    cannonbuy.setTint(0x90ee90);
+                    cb = true
+                    this.pound -= this.cannoprice; 
+                    this.poundtext('#ff0000');
+                    this.sound.play('coin');
+                    this.cannoprice *=  2;
+              
+                    this.cannon = true;
+                    this.cannonbuy *= 2
+                    cannonbuy.setText(`${this.cannoprice} - Upgrade cannon`);
+                    rcb();
+
+                } else {
+                    cannonbuy.setTint(0xff0000);
+                    this.sound.play('broke');
+                }
+            })
+                
+            cannonbuy.on('pointerout', () => {clearTint(cannonbuy);cb = false});
+            cannonbuy.on('pointerup', () => {clearTint(cannonbuy);cb = false});
+            let boundupcn = cannonbuy.getBounds();
+            const cbg = this.add.graphics();
+            cbg.fillStyle(0x000000, 1);
+            cbg.setInteractive();
+
+            const rcb = () => {
+                boundupcn = cannonbuy.getBounds();
+                cbg.fillRect(
+                boundupcn.x -padding,
+                boundupcn.y -padding,
+                boundupcn.width + padding * 2,
+                boundupcn.height + padding * 2
+            )}
+            rcb();
+                
+              
+
+            cbg.on("pointerdown",()=>{
+                if (this.pound>=this.cannoprice-1 && cb === false) {
+                    cannonbuy.setTint(0x90ee90);
+                    cb = true
+                    this.pound -= this.cannoprice; 
+                    this.poundtext('#ff0000');
+                    this.sound.play('coin');
+                    this.cannoprice *=  2;
+             
+                    this.cannon = true;
+                    this.candam *= 2
+                    cannonbuy.setText(`${this.cannoprice} - Upgrade cannon`);
+                    rcb();
+
+                } else {
+                    cannonbuy.setTint(0xff0000);
+                    this.sound.play('broke');
+                }
+            })
+                
+            cbg.on('pointerout', () => {clearTint(cannonbuy);cb = false});
+            cbg.on('pointerup', () => {clearTint(cannonbuy);cb = false});
+            //cannon function
+            this.time.addEvent({
+                delay: 7000,      // 1000 ms = 1 second
+                loop: true,
+                callback: () => {
+                    if (this.cannon===true) {
+                        this.sound.play('boom');
+                        const bigboom = this.add.sprite(cam.centerX,cam.centerY,"explosion")
+                        .setDepth(99999).setScale(3,3);
+
+                        this.time.addEvent({
+                            delay: 500,
+                            loop:  false,
+                            callback: () => {
+                                bigboom.destroy();
+                            }
+                        })
+                        enemylist.forEach((enemy,index) => {
+                            enemy.damage(this.candam);
+                        })
+                    }
+                    
+                }
+            });
 
             //FANS buy
-            let bgf = false
-            const fansp = this.add.text(cam.width * 0.2, 630,`${this.fanprice} - Hire fans`, {
-                font: '18px Arial',
+            let bgf = false     
+            const fansp = this.add.text(cam.width * 0.2, 430,`${this.fanprice} - Hire fans`, {
+                font: '20px Arial',
                 fill: '#ffffff'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0).setInteractive();
             fansp.on("pointerdown",()=>{
@@ -422,7 +519,7 @@
 
             //rebirth
             let bpr = false
-            const rebirth = this.add.text(cam.width * 0.2, 530,`${this.rebirthcost} - Move into new studio`, {
+            const rebirth = this.add.text(cam.width * 0.2, 330,`${this.rebirthcost} - Move into new studio`, {
                 font: '18px Arial',
                 fill: '#ffffff'
             }).setDepth(9999).setScale(2,2).setOrigin(0.5, 0).setInteractive();
@@ -567,8 +664,8 @@
                 let HATE = this.add.sprite(spawnran,cam.centerY*2, 'hate'
                 ).setInteractive().setDepth(99999).setScale(sizeran/40,sizeran/40)
 
-                const damageenemy = () => {
-                    hpran -= this.cpc;
+                const damageenemy = (damage) => {
+                    hpran -= damage;
                     if (!(HATE.tint==(0x000ff))) {
                         console.log("Change color")
                         HATE.setTint(0x0000ff);
@@ -684,7 +781,6 @@
                 delay: 1000,      // 1000 ms = 1 second
                 loop: true,
                 callback: () => {
-                    console.log(enemylist)
                     if (this.cps>0) {
                         this.pound += this.cps*this.multiplyer;
                         this.poundtext('#00ff00');
